@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ParameterMetaData;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -41,4 +42,17 @@ public class SqlHelper {
 		Connection conn = DriverManager.getConnection (url, "b63f5d595665c5", "6531134d");
 		return conn;
 	  }
+
+	public User getUserById(int userId) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		Connection conn = getMySqlConnection();
+		String paramString =Integer.toString(userId);
+	    String simpleProc = "{ call sp_UI_GetUserFromId(" + userId + ") }";
+	    CallableStatement cs = conn.prepareCall(simpleProc);
+	    cs.registerOutParameter(2, Types.VARCHAR);
+	    cs.registerOutParameter(3, Types.VARCHAR);
+	    cs.execute();
+	    User toReturn = new User(cs.getString(1), cs.getString(2));
+	    conn.close();
+	    return toReturn;
+	}
 }

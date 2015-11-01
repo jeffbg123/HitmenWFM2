@@ -1,6 +1,8 @@
 package com.hitmenwfm.controller;
 
 import java.io.Serializable;
+import java.sql.CallableStatement;
+import java.sql.SQLException;
 import java.util.Date;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.DateSerializer;
@@ -22,6 +24,11 @@ public class User   {
 	private String homePhone;
 	private String birthDate;
 	
+	public User(String userName, String email) throws SQLException {
+		setUserName(userName);
+		setEmail(email);
+	}
+
 	public String getBirthDate() {
 		return birthDate;
 	}

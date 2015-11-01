@@ -7,9 +7,9 @@
  
     <context:component-scan base-package="com.hitmenwfm.controller" />
     <mvc:annotation-driven />
-     
-    <!-- JSON Support -->
-    <bean name="viewResolver" class="org.springframework.web.servlet.view.BeanNameViewResolver"/>
-    <bean name="jsonTemplate" class="org.springframework.web.servlet.view.json.MappingJackson2JsonView"/>
- 
+
+    <bean id="jsonConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+        <property name="prefixJson" value="false"/>
+        <property name="supportedMediaTypes" value="application/json"/>
+    </bean>
 </beans>

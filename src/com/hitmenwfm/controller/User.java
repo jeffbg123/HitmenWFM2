@@ -5,22 +5,22 @@ import java.util.Date;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.DateSerializer;
 
-public class User implements Serializable  {
-	public String userName;
-	public String email;
-	public String password;
-	public String firstName;
-	public String lastName;
-	public String middleName;
-	public String streetAddressLine1;
-	public String streetAddressLine2;
-	public String streetAddressLine3;
-	public String city;
-	public String state;
-	public String zip;
-	public String cellPhone;
-	public String homePhone;
-	public String birthDate;
+public class User   {
+	private String userName;
+	private String email;
+	private String password;
+	private String firstName;
+	private String lastName;
+	private String middleName;
+	private String streetAddressLine1;
+	private String streetAddressLine2;
+	private String streetAddressLine3;
+	private String city;
+	private String state;
+	private String zip;
+	private String cellPhone;
+	private String homePhone;
+	private String birthDate;
 	
 	public String getBirthDate() {
 		return birthDate;

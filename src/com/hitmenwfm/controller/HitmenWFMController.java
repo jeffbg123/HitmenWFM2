@@ -19,10 +19,16 @@ public class HitmenWFMController {
 	}
 	
 	@RequestMapping(value="/user",method=RequestMethod.POST)
-	public @ResponseBody User createUser(@ModelAttribute User user) throws Exception {
+	public @ResponseBody User createUser(@RequestBody User user) throws Exception {
 		SqlHelper sh = new SqlHelper();
 		sh.InsertUser(user);
 		return user;
+	}
+	
+	@RequestMapping(value="/test",method=RequestMethod.POST)
+	public @ResponseBody Test createTest(@RequestBody Test test) throws Exception {
+		
+		return test;
 	}
 	
 	@RequestMapping(value = "/hello", method = RequestMethod.GET)

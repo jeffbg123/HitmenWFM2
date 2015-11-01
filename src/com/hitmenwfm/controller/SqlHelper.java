@@ -14,21 +14,21 @@ public class SqlHelper {
 		Connection conn = getMySqlConnection();
 		//String dateString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 		String paramString = String.format("'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s'", 
-				user.userName, 
-				user.email, 
-				user.password,
-				user.firstName,
-				user.lastName,
-				user.middleName,
-				user.streetAddressLine1,
-				user.streetAddressLine2,
-				user.streetAddressLine3,
-				user.city,
-				user.zip,
-				user.state,
-				user.homePhone,
-				user.cellPhone,
-				user.birthDate);
+				user.getuserName(), 
+				user.getEmail(), 
+				user.getPassword(),
+				user.getFirstName(),
+				user.getLastName(),
+				user.getMiddleName(),
+				user.getStreetAddressLine1(),
+				user.getStreetAddressLine2(),
+				user.getStreetAddressLine3(),
+				user.getCity(),
+				user.getZip(),
+				user.getState(),
+				user.getHomePhone(),
+				user.getCellPhone(),
+				user.getBirthDate());
 	    String simpleProc = "{ call sp_UI_CreateNewUser(" + paramString + ") }";
 	    CallableStatement cs = conn.prepareCall(simpleProc);
 	    cs.execute();

@@ -24,6 +24,10 @@ public class User   {
 	private String homePhone;
 	private String birthDate;
 	
+	public User() {
+		
+	}
+	
 	public User(String userName, String email, String password, String firstName, String lastName, String middleName,
 			String streetAddressLine1, String streetAddressLine2, String streetAddressLine3, String city,
 			String state, String zip, String cellPhone, String homePhone, String birthDate) throws SQLException {

@@ -23,9 +23,9 @@ public class HitmenWFMController {
 		return new ResponseEntity<String>("User added successfully", HttpStatus.OK);
 	}
 	
-	@RequestMapping(value="/user/{userId}",method=RequestMethod.GET)
-	public @ResponseBody User getUserById(@PathVariable int userId) throws Exception {
+	@RequestMapping(value="/user/{username}",method=RequestMethod.GET)
+	public @ResponseBody User getUserUsername(@PathVariable String username) throws Exception {
 		SqlHelper sh = new SqlHelper();
-		return sh.getUserById(userId);
+		return sh.getUserByUsername(username);
 	}
 }

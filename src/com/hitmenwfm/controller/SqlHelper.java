@@ -4,6 +4,7 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ParameterMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.text.SimpleDateFormat;
@@ -13,7 +14,6 @@ public class SqlHelper {
 	
 	public void InsertUser(User user) throws Exception {
 		Connection conn = getMySqlConnection();
-		//String dateString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 		String paramString = String.format("'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s'", 
 				user.getuserName(), 
 				user.getEmail(), 
@@ -43,15 +43,29 @@ public class SqlHelper {
 		return conn;
 	  }
 
-	public User getUserById(int userId) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+	public User getUserByUsername(String username) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		Connection conn = getMySqlConnection();
-		String paramString =Integer.toString(userId);
-	    String simpleProc = "{ call sp_UI_GetUserFromId(" + userId + ") }";
+	    String simpleProc = "{ call sp_UI_GetUserFromUsername('" + username + "') }";
 	    CallableStatement cs = conn.prepareCall(simpleProc);
-	    cs.registerOutParameter(2, Types.VARCHAR);
-	    cs.registerOutParameter(3, Types.VARCHAR);
 	    cs.execute();
-	    User toReturn = new User(cs.getString(1), cs.getString(2));
+	    ResultSet rs1 = cs.getResultSet();
+	    rs1.next();
+
+	    User toReturn = new User(rs1.getString("username"),
+	    		rs1.getString("email"),
+	    		rs1.getString("password"),
+	    		rs1.getString("FirstName"),
+	    		rs1.getString("LastName"),
+	    		rs1.getString("MiddleName"),
+	    		rs1.getString("StreetAddressLine1"),
+	    		rs1.getString("StreetAddressLine2"),
+	    		rs1.getString("StreetAddressLine3"),
+	    		rs1.getString("City"),
+	    		rs1.getString("Zip"),
+	    		rs1.getString("State"),
+	    		rs1.getString("HomePhone"),
+	    		rs1.getString("CellPhone"),
+	    		rs1.getString("BirthDate"));
 	    conn.close();
 	    return toReturn;
 	}

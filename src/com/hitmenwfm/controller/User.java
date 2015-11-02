@@ -24,9 +24,24 @@ public class User   {
 	private String homePhone;
 	private String birthDate;
 	
-	public User(String userName, String email) throws SQLException {
+	public User(String userName, String email, String password, String firstName, String lastName, String middleName,
+			String streetAddressLine1, String streetAddressLine2, String streetAddressLine3, String city,
+			String state, String zip, String cellPhone, String homePhone, String birthDate) throws SQLException {
 		setUserName(userName);
 		setEmail(email);
+		setPassword(password);
+		setFirstName(firstName);
+		setMiddleName(middleName);
+		setLastName(lastName);
+		setStreetAddressLine1(streetAddressLine1);
+		setStreetAddressLine2(streetAddressLine2);
+		setStreetAddressLine3(streetAddressLine3);
+		setCity(city);
+		setState(state);
+		setZip(zip);
+		setCellPhone(cellPhone);
+		setHomePhone(homePhone);
+		setBirthDate(birthDate);
 	}
 
 	public String getBirthDate() {

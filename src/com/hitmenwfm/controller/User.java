@@ -7,7 +7,7 @@ import java.util.Date;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.DateSerializer;
 
-public class User   {
+public class User implements Serializable   {
 	private String userName;
 	private String email;
 	private String password;
@@ -22,7 +22,7 @@ public class User   {
 	private String zip;
 	private String cellPhone;
 	private String homePhone;
-	private String birthDate;
+	private Date birthDate;
 	
 	public User() {
 		
@@ -30,7 +30,7 @@ public class User   {
 	
 	public User(String userName, String email, String password, String firstName, String lastName, String middleName,
 			String streetAddressLine1, String streetAddressLine2, String streetAddressLine3, String city,
-			String state, String zip, String cellPhone, String homePhone, String birthDate) throws SQLException {
+			String state, String zip, String cellPhone, String homePhone, Date birthDate) throws SQLException {
 		setUserName(userName);
 		setEmail(email);
 		setPassword(password);
@@ -48,11 +48,11 @@ public class User   {
 		setBirthDate(birthDate);
 	}
 
-	public String getBirthDate() {
+	public Date getBirthDate() {
 		return birthDate;
 	}
 	
-	public void setBirthDate(String birthDate) {
+	public void setBirthDate(Date birthDate) {
 		this.birthDate = birthDate;
 	}
 	

@@ -1,5 +1,7 @@
 package com.hitmenwfm.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,19 +18,24 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class HitmenWFMController {
 	
+	
+	
+	//--------------------------------------------------------------------------------
+	//START: /USER
+	
 	/**
 	 * Takes a new user in json format and adds that user to the database with the 
-	 * stored procedure sp_UI_CreateNewUser. It returns a ResponseEntity with an HttpStatus
+	 * stored procedure sp_UI_CreateNewUser. It returns a the User that was created
 	 * 
 	 * @param user
-	 * @return HttpStatus
+	 * @return User
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/user",method=RequestMethod.POST)
-	public @ResponseBody ResponseEntity<String> createUser(@RequestBody User user) throws Exception {
+	public @ResponseBody User createUser(@RequestBody User user) throws Exception {
 		SqlHelper sh = new SqlHelper();
 		sh.InsertUser(user);
-		return new ResponseEntity<String>("User added successfully", HttpStatus.OK);
+		return user;
 	}
 	
 	/**
@@ -45,4 +52,201 @@ public class HitmenWFMController {
 		SqlHelper sh = new SqlHelper();
 		return sh.getUserByUsername(username);
 	}
+	
+	/**
+	 * Takes a username in json format and sends an email to the username's associated
+	 * email with a link to reset the password. It returns the user.
+	 * 
+	 * @param userName
+	 * @return User
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/user/forgot",method=RequestMethod.POST)
+	public @ResponseBody User userForgot(@RequestBody UserName userName) throws Exception {
+		
+		return null;
+	}
+	
+	/**
+	 * This will take JSON for a username and a new password. 
+	 * It set the password in the database for that user to the new password. 
+	 * It will return the User that has been modified.
+	 * 
+	 * 
+	 * @param PasswordInfo
+	 * @return User
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/user/password",method=RequestMethod.POST)
+	public @ResponseBody User userForgot(@RequestBody PasswordInfo passwordInfo) throws Exception {
+		
+		return null;
+	}
+	
+	/**
+	 *  This will take JSON for a username and password. If they match it will return the User object,
+	 *   otherwise it will return an error
+	 * 
+	 * 
+	 * @param LoginInfo
+	 * @return User
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/user/login",method=RequestMethod.POST)
+	public @ResponseBody User userLogin(@RequestBody LoginInfo loginInfo) throws Exception {
+		
+		return null;
+	}
+	
+	/**
+	 *  This will take JSON for a user and update all of the user info based on the username
+	 *  It will return the User that has been updated
+	 * 
+	 * 
+	 * @param User
+	 * @return User
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/user/login",method=RequestMethod.POST)
+	public @ResponseBody User userLogin(@RequestBody User user) throws Exception {
+		
+		return null;
+	}
+	
+	//END: /USER
+	//--------------------------------------------------------------------------------
+	
+	//--------------------------------------------------------------------------------
+	//START: /TASKS
+	
+	/**
+	 *  This will take JSON for a task, create the task, and return the created task
+	 * 
+	 * 
+	 * @param Task
+	 * @return Task
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/tasks",method=RequestMethod.POST)
+	public @ResponseBody Task createTask(@RequestBody Task task) throws Exception {
+		
+		return null;
+	}
+	
+	/**
+	 *  This will take a taskid as a path parameter and JSON for a task object. 
+	 *  It will update the task with the new task object and return the new Task
+	 * 
+	 * 
+	 * @param int , Task
+	 * @return Task
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/tasks/{taskid}",method=RequestMethod.POST)
+	public @ResponseBody Task updateTask(@PathVariable int taskid, @RequestBody Task task) throws Exception {
+		
+		return null;
+	}
+	
+	/**
+	 *   takes no parameters/input and returns all of the tasks in the system
+	 * 
+	 * 
+	 * @param NONE
+	 * @return List<Task>
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/tasks",method=RequestMethod.GET)
+	public @ResponseBody List<Task> getTask() throws Exception {
+		
+		return null;
+	}
+	
+	/**
+	 *   takes no parameters/input and returns all of the tasks in the system
+	 * 
+	 * 
+	 * @param String username, String category (all/completed/outstanding)
+	 * @return List<Task>
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/tasks/{username}/{category}",method=RequestMethod.GET)
+	public @ResponseBody List<Task> getTaskByUsernameAndCategory(@PathVariable String username, @PathVariable String category) throws Exception {
+		
+		return null;
+	}
+	
+	/**
+	 *   This will take a taskid as a path parameter and delete the task from
+	 *    the database. It will return the deleted task
+	 * 
+	 * 
+	 * @param int taskid
+	 * @return Task
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/tasks/{taskid}",method=RequestMethod.DELETE)
+	public @ResponseBody Task deleteTask(@PathVariable int taskid) throws Exception {
+		
+		return null;
+	}
+	
+	/**
+	 *  This will take a taskid as a path parameter and update the task in the database to complete
+	 * It returns the Task
+	 * 
+	 * @param int taskid
+	 * @return Task
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/tasks/{taskid}/complete",method=RequestMethod.POST)
+	public @ResponseBody Task markTaskComplete(@PathVariable int taskid) throws Exception {
+		
+		return null;
+	}
+	
+	//END: /TASKS
+	//--------------------------------------------------------------------------------
+	
+	//--------------------------------------------------------------------------------
+	//START: /TEMPLATES
+		
+	/**
+	 *   This will return a list of all of the templates in the database
+	 * 
+	 * 
+	 * @param NONE
+	 * @return List<Template>
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/templates",method=RequestMethod.GET)
+	public @ResponseBody List<Template> getTemplates() throws Exception {
+		
+		return null;
+	}
+	
+	/**
+	 *   This will return the template in the database with the template id specified
+	 * 
+	 * 
+	 * @param int
+	 * @return Template
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/templates/{templateid}",method=RequestMethod.GET)
+	public @ResponseBody Template getTemplateById(@PathVariable int templateId) throws Exception {
+		
+		return null;
+	}
+
+	//END: /TEMPLATES
+	//--------------------------------------------------------------------------------
+	
+	//--------------------------------------------------------------------------------
+	//START: /REPORTS
+	
+	
+
+	//END: /REPORTS
+	//--------------------------------------------------------------------------------
 }

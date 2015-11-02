@@ -65,7 +65,7 @@ public class SqlHelper {
 	    		rs1.getString("State"),
 	    		rs1.getString("HomePhone"),
 	    		rs1.getString("CellPhone"),
-	    		rs1.getString("BirthDate"));
+	    		rs1.getDate("BirthDate"));
 	    conn.close();
 	    return toReturn;
 	}

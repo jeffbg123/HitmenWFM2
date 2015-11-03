@@ -167,4 +167,9 @@ public class User implements Serializable   {
 	public String getCellPhone() {
 		return cellPhone;
 	}
+
+	public void emailForgotPassword() {
+		
+		
+	}
 }

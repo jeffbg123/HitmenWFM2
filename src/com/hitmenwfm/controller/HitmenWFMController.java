@@ -63,8 +63,10 @@ public class HitmenWFMController {
 	 */
 	@RequestMapping(value="/user/forgot",method=RequestMethod.POST)
 	public @ResponseBody User userForgot(@RequestBody UserName userName) throws Exception {
-		
-		return null;
+		SqlHelper sh = new SqlHelper();
+		User user = sh.getUserByUsername(userName.getUserName());
+		user.emailForgotPassword();
+		return user;
 	}
 	
 	/**
@@ -79,8 +81,9 @@ public class HitmenWFMController {
 	 */
 	@RequestMapping(value="/user/password",method=RequestMethod.POST)
 	public @ResponseBody User userForgot(@RequestBody PasswordInfo passwordInfo) throws Exception {
-		
-		return null;
+		SqlHelper sh = new SqlHelper();
+		sh.updatePassword(passwordInfo.getUserName(), passwordInfo.getPassword());
+		return sh.getUserByUsername(passwordInfo.getUserName());		
 	}
 	
 	/**
@@ -88,13 +91,16 @@ public class HitmenWFMController {
 	 *   otherwise it will return an error
 	 * 
 	 * 
-	 * @param LoginInfo
+	 * @param PasswordInfo
 	 * @return User
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/user/login",method=RequestMethod.POST)
-	public @ResponseBody User userLogin(@RequestBody LoginInfo loginInfo) throws Exception {
-		
+	public @ResponseBody User userLogin(@RequestBody PasswordInfo loginInfo) throws Exception {
+		SqlHelper sh = new SqlHelper();
+		User user = sh.getUserByUsername(loginInfo.getUserName());
+		if(user.getPassword().equals(loginInfo.getPassword()))
+				return user;
 		return null;
 	}
 	
@@ -109,8 +115,9 @@ public class HitmenWFMController {
 	 */
 	@RequestMapping(value="/user/login",method=RequestMethod.POST)
 	public @ResponseBody User userLogin(@RequestBody User user) throws Exception {
-		
-		return null;
+		SqlHelper sh = new SqlHelper();
+		sh.updateUser(user);
+		return user;
 	}
 	
 	//END: /USER
@@ -129,8 +136,9 @@ public class HitmenWFMController {
 	 */
 	@RequestMapping(value="/tasks",method=RequestMethod.POST)
 	public @ResponseBody Task createTask(@RequestBody Task task) throws Exception {
-		
-		return null;
+		SqlHelper sh = new SqlHelper();
+		sh.InsertTask(task);
+		return task;
 	}
 	
 	/**
@@ -144,8 +152,9 @@ public class HitmenWFMController {
 	 */
 	@RequestMapping(value="/tasks/{taskid}",method=RequestMethod.POST)
 	public @ResponseBody Task updateTask(@PathVariable int taskid, @RequestBody Task task) throws Exception {
-		
-		return null;
+		SqlHelper sh = new SqlHelper();
+		sh.updateTask(taskid, task);
+		return task;		
 	}
 	
 	/**
@@ -158,13 +167,13 @@ public class HitmenWFMController {
 	 */
 	@RequestMapping(value="/tasks",method=RequestMethod.GET)
 	public @ResponseBody List<Task> getTask() throws Exception {
-		
-		return null;
+		SqlHelper sh = new SqlHelper();
+		return sh.getAllTasks();
 	}
 	
 	/**
-	 *   takes no parameters/input and returns all of the tasks in the system
-	 * 
+	 *   takes a username and category (all/completed/outstanding) and returns all of the tasks in the system
+	 * 		that fit the parameters
 	 * 
 	 * @param String username, String category (all/completed/outstanding)
 	 * @return List<Task>
@@ -172,8 +181,8 @@ public class HitmenWFMController {
 	 */
 	@RequestMapping(value="/tasks/{username}/{category}",method=RequestMethod.GET)
 	public @ResponseBody List<Task> getTaskByUsernameAndCategory(@PathVariable String username, @PathVariable String category) throws Exception {
-		
-		return null;
+		SqlHelper sh = new SqlHelper();
+		return sh.getAllTasks(username, category);
 	}
 	
 	/**
@@ -182,13 +191,14 @@ public class HitmenWFMController {
 	 * 
 	 * 
 	 * @param int taskid
-	 * @return Task
+	 * @return TaskID
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/tasks/{taskid}",method=RequestMethod.DELETE)
-	public @ResponseBody Task deleteTask(@PathVariable int taskid) throws Exception {
-		
-		return null;
+	public @ResponseBody int deleteTask(@PathVariable int taskid) throws Exception {
+		SqlHelper sh = new SqlHelper();
+		sh.deleteTask(taskid);
+		return taskid;
 	}
 	
 	/**
@@ -196,13 +206,14 @@ public class HitmenWFMController {
 	 * It returns the Task
 	 * 
 	 * @param int taskid
-	 * @return Task
+	 * @return taskid
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/tasks/{taskid}/complete",method=RequestMethod.POST)
-	public @ResponseBody Task markTaskComplete(@PathVariable int taskid) throws Exception {
-		
-		return null;
+	public @ResponseBody int markTaskComplete(@PathVariable int taskid) throws Exception {
+		SqlHelper sh = new SqlHelper();
+		sh.markTaskComplete(taskid);
+		return taskid;
 	}
 	
 	//END: /TASKS
@@ -221,8 +232,8 @@ public class HitmenWFMController {
 	 */
 	@RequestMapping(value="/templates",method=RequestMethod.GET)
 	public @ResponseBody List<Template> getTemplates() throws Exception {
-		
-		return null;
+		SqlHelper sh = new SqlHelper();
+		return sh.getAllTemplates();
 	}
 	
 	/**
@@ -235,8 +246,8 @@ public class HitmenWFMController {
 	 */
 	@RequestMapping(value="/templates/{templateid}",method=RequestMethod.GET)
 	public @ResponseBody Template getTemplateById(@PathVariable int templateId) throws Exception {
-		
-		return null;
+		SqlHelper sh = new SqlHelper();
+		return sh.getTemplate(templateId);
 	}
 
 	//END: /TEMPLATES

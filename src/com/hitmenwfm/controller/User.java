@@ -4,6 +4,10 @@ import java.io.Serializable;
 import java.sql.CallableStatement;
 import java.sql.SQLException;
 import java.util.Date;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.DateSerializer;
 
@@ -168,8 +172,11 @@ public class User implements Serializable   {
 		return cellPhone;
 	}
 
-	public void emailForgotPassword() {
-		
-		
+	public void emailForgotPassword() throws AddressException, MessagingException {
+		String header = "HitmenWFM Forgot Password Reset Link";
+		String body = "Placeholder for reset link";
+		String username = "hitmenwfm@gmail.com";
+		String password = "hitmenwfmhitmenwfm";
+		GoogleMail.Send(username, password, email, header, body);
 	}
 }

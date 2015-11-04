@@ -80,7 +80,7 @@ public class HitmenWFMController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/user/password",method=RequestMethod.POST)
-	public @ResponseBody User userForgot(@RequestBody PasswordInfo passwordInfo) throws Exception {
+	public @ResponseBody User userSetPassword(@RequestBody PasswordInfo passwordInfo) throws Exception {
 		SqlHelper sh = new SqlHelper();
 		sh.updatePassword(passwordInfo.getUserName(), passwordInfo.getPassword());
 		return sh.getUserByUsername(passwordInfo.getUserName());		
@@ -113,8 +113,8 @@ public class HitmenWFMController {
 	 * @return User
 	 * @throws Exception
 	 */
-	@RequestMapping(value="/user/login",method=RequestMethod.POST)
-	public @ResponseBody User userLogin(@RequestBody User user) throws Exception {
+	@RequestMapping(value="/user/update",method=RequestMethod.POST)
+	public @ResponseBody User userUpdate(@RequestBody User user) throws Exception {
 		SqlHelper sh = new SqlHelper();
 		sh.updateUser(user);
 		return user;

@@ -62,7 +62,7 @@ public class HitmenWFMController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/user/forgot",method=RequestMethod.POST)
-	public @ResponseBody User userForgot(@RequestBody UserName userName) throws Exception {
+	public @ResponseBody User userForgot(@RequestBody UserNameOnly userName) throws Exception {
 		SqlHelper sh = new SqlHelper();
 		User user = sh.getUserByUsername(userName.getUserName());
 		user.emailForgotPassword();

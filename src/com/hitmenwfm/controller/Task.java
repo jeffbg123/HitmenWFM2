@@ -1,21 +1,35 @@
 package com.hitmenwfm.controller;
 
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Task {
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+public class Task implements Serializable {
 	private int taskId;
 	private String taskName;
 	private String taskDescription;
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="CST")
 	private Date startDate;
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="CST")
 	private Date dueDate;
-	private Date completedDate;
-	private Date createDate;
-	private Date updateDate;
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="CST")
+	private Date completedDate = new Date(1000,1,1);
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="CST")
+	private Date createDate = new Date();
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="CST")
+	private Date updateDate = new Date();
 	private String assignedToUser;
 	private String assignedByUser;
-	private String patient;
+	private int assignedToUserId = 0;
+	private int assignedByUserId = 0;
+	private int patient;
 	
-	public Task(int taskId, String taskName, String taskDescription, Date startDate, Date dueDate, Date completedDate, Date createDate, Date updateDate, String assignedToUser, String assignedByUser, String patient) {
+	public Task() {
+	}
+	
+	public Task(int taskId, String taskName, String taskDescription, Date startDate, Date dueDate, Date completedDate, Date createDate, Date updateDate, int assignedToUserId, String assignedToUser, int assignedByUserId, String assignedByUser, int patient) {
 		this.taskId = taskId;
 		this.taskName = taskName;
 		this.taskDescription = taskDescription;
@@ -24,10 +38,14 @@ public class Task {
 		this.completedDate = completedDate;
 		this.createDate = createDate;
 		this.updateDate = updateDate;
-		this.assignedToUser = assignedToUser;
+		this.assignedToUserId = assignedToUserId;
+		this.assignedByUserId = assignedByUserId;
 		this.assignedByUser = assignedByUser;
+		this.assignedToUser = assignedToUser;
 		this.patient = patient;
 	}
+	
+	
 	
 	public int getTaskId() {
 		return taskId;
@@ -109,11 +127,11 @@ public class Task {
 		this.assignedByUser = assignedByUser;
 	}
 	
-	public String getPatient() {
+	public int getPatient() {
 		return patient;
 	}
 	
-	public void setPatient(String patient) {
+	public void setPatient(int patient) {
 		this.patient = patient;
 	}
 }

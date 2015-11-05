@@ -45,7 +45,7 @@ public class SqlHelper {
 				user.getState(),
 				user.getHomePhone(),
 				user.getCellPhone(),
-				user.getBirthDate());
+				user.getBirthDateMysqlString());
 	    String simpleProc = "{ call sp_UI_CreateNewUser(" + paramString + ") }";
 	    CallableStatement cs = conn.prepareCall(simpleProc);
 	    cs.execute();
@@ -104,7 +104,7 @@ public class SqlHelper {
 				user.getState(),
 				user.getHomePhone(),
 				user.getCellPhone(),
-				user.getBirthDate());
+				user.getBirthDateMysqlString());
 	    String simpleProc = "{ call sp_UI_UpdateUser(" + paramString + ") }";
 	    CallableStatement cs = conn.prepareCall(simpleProc);
 	    cs.execute();
@@ -119,6 +119,37 @@ public class SqlHelper {
 	    ResultSet rs1 = cs.getResultSet();
 	    rs1.next();
 	    return rs1.getInt("id");
+	}
+	
+	public List<User> getAllUsers() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		List<User> toReturn = new ArrayList<User>();
+		
+		Connection conn = getMySqlConnection();
+	    String simpleProc = "{ call sp_sel_user() }";
+	    CallableStatement cs = conn.prepareCall(simpleProc);
+	    cs.execute();
+	    ResultSet rs1 = cs.getResultSet();
+	    while(rs1.next()) {
+		    User toAdd = new User(rs1);
+		    toReturn.add(toAdd);
+	    }
+	    conn.close();
+		
+		return toReturn;
+	}
+	
+	public String getUsernameFromId(int id) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		List<User> allUsers = getAllUsers();
+		for(int i = 0;i<allUsers.size();i++) {
+			if(allUsers.get(i).getId() == id)
+				return allUsers.get(i).getuserName();
+		}
+		return "";
+	}
+	
+	public String dateToString(Date d) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		return sdf.format(d);
 	}
 
 	public void updateUser(User user) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
@@ -138,7 +169,7 @@ public class SqlHelper {
 				user.getState(),
 				user.getHomePhone(),
 				user.getCellPhone(),
-				user.getBirthDate());
+				user.getBirthDateMysqlString());
 	    String simpleProc = "{ call sp_UI_UpdateUser(" + paramString + ") }";
 	    CallableStatement cs = conn.prepareCall(simpleProc);
 	    cs.execute();
@@ -148,9 +179,9 @@ public class SqlHelper {
 	public void InsertTask(Task task) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		Connection conn = getMySqlConnection();
 		String paramString = String.format("'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s'", 
-				task.getTaskName(), task.getTaskDescription(), task.getStartDate(), task.getDueDate(),
-				task.getCompletedDate(), task.getAssignedToUser(), task.getAssignedByUser(),
-				task.getPatient(), task.getCreateDate(), task.getUpdateDate());
+				task.getTaskName(), task.getTaskDescription(), dateToString(task.getStartDate()), dateToString(task.getDueDate()),
+				dateToString(task.getCompletedDate()), getUserId(task.getAssignedToUser()), getUserId(task.getAssignedByUser()),
+				task.getPatient(), dateToString(task.getCreateDate()), dateToString(task.getUpdateDate()));
 	    String simpleProc = "{ call sp_ins_task(" + paramString + ") }";
 	    CallableStatement cs = conn.prepareCall(simpleProc);
 	    cs.execute();
@@ -160,9 +191,9 @@ public class SqlHelper {
 	public void updateTask(int taskid, Task task) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		Connection conn = getMySqlConnection();
 		String paramString = String.format("'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s'", taskid,
-				task.getTaskName(), task.getTaskDescription(), task.getStartDate(), task.getDueDate(),
-				task.getCompletedDate(), task.getAssignedToUser(), task.getAssignedByUser(),
-				task.getPatient(), task.getCreateDate(), task.getUpdateDate());
+				task.getTaskName(), task.getTaskDescription(), dateToString(task.getStartDate()), dateToString(task.getDueDate()),
+						dateToString(task.getCompletedDate()), getUserId(task.getAssignedToUser()), getUserId(task.getAssignedByUser()),
+				task.getPatient(), dateToString(task.getCreateDate()), dateToString(task.getUpdateDate()));
 	    String simpleProc = "{ call sp_upd_task(" + paramString + ") }";
 	    CallableStatement cs = conn.prepareCall(simpleProc);
 	    cs.execute();
@@ -186,9 +217,11 @@ public class SqlHelper {
 		    		rs1.getDate("CompletedDate"),
 		    		rs1.getDate("CreateDate"),
 		    		rs1.getDate("UpdateDate"),
-		    		rs1.getString("AssignedToUserId"),
-		    		rs1.getString("AssignedByUserId"),
-		    		rs1.getString("patientId"));
+		    		rs1.getInt("AssignedToUserId"),
+		    		getUsernameFromId(rs1.getInt("AssignedToUserId")),
+		    		rs1.getInt("AssignedByUserId"),
+		    		getUsernameFromId(rs1.getInt("AssignedByUserId")),
+		    		rs1.getInt("patientId"));
 		    toReturn.add(toAdd);
 	    }
 	    conn.close();
@@ -198,8 +231,9 @@ public class SqlHelper {
 
 	public List<Task> getAllTasks(String username, String category) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		List<Task> allTasks = getAllTasks();
-		for(int i = allTasks.size();i>=0;i--) {
-			if(!allTasks.get(i).getAssignedToUser().equals(username)) {
+		int userId = getUserId(username);
+		for(int i = allTasks.size()-1;i>=0;i--) {
+			if(!(allTasks.get(i).getAssignedToUser()).equals(username)) {
 				allTasks.remove(i);
 			}
 			

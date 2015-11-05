@@ -2,16 +2,25 @@ package com.hitmenwfm.controller;
 
 import java.io.Serializable;
 import java.sql.CallableStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.DateSerializer;
 
 public class User implements Serializable   {
+	private int id = -1;
 	private String userName;
 	private String email;
 	private String password;
@@ -26,6 +35,12 @@ public class User implements Serializable   {
 	private String zip;
 	private String cellPhone;
 	private String homePhone;
+	private Date createTime;
+	private int userTypeId;
+	private Date updateTime;
+	private int userDetailsId;
+	
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="CST")
 	private Date birthDate;
 	
 	public User() {
@@ -52,12 +67,52 @@ public class User implements Serializable   {
 		setBirthDate(birthDate);
 	}
 
+	public User(ResultSet rs1) throws SQLException {
+		setId(rs1.getInt("id"));
+		setUserName(rs1.getString("username"));
+		setEmail(rs1.getString("email"));
+		setPassword(rs1.getString("password"));
+		setCreateTime(rs1.getDate("create_time"));
+		setUserTypeId(rs1.getInt("userTypeID"));
+		setUpdateTime(rs1.getDate("UpdateTime"));
+		setUserDetailsID(rs1.getInt("userDetailsID"));
+	}
+	
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+	
+	public void setUserTypeId(int userTypeId) {
+		this.userTypeId = userTypeId;
+	}
+	
+	public void setUpdateTime(Date updateTime) {
+		this.updateTime = updateTime;
+	}
+	
+	public void setUserDetailsID(int userDetailsId) {
+		this.userDetailsId = userDetailsId;
+	}
+	
+	public int getId() {
+		return id;
+	}
+	
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	public Date getBirthDate() {
 		return birthDate;
 	}
 	
 	public void setBirthDate(Date birthDate) {
 		this.birthDate = birthDate;
+	}
+	
+	public String getBirthDateMysqlString() {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		return sdf.format(getBirthDate());
 	}
 	
 	public void setUserName(String userName) {
@@ -175,7 +230,7 @@ public class User implements Serializable   {
 	public void emailForgotPassword() throws AddressException, MessagingException {
 		String header = "HitmenWFM Forgot Password Reset Link";
 		String body = "Placeholder for reset link";
-		String username = "hitmenwfm@gmail.com";
+		String username = "hitmenwfm";
 		String password = "hitmenwfmhitmenwfm";
 		GoogleMail.Send(username, password, email, header, body);
 	}

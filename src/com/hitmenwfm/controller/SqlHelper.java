@@ -179,9 +179,9 @@ public class SqlHelper {
 	public void InsertTask(Task task) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		Connection conn = getMySqlConnection();
 		String paramString = String.format("'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s'", 
-				task.getTaskName(), task.getTaskDescription(), dateToString(task.getStartDate()), dateToString(task.getDueDate()),
-				dateToString(task.getCompletedDate()), getUserId(task.getAssignedToUser()), getUserId(task.getAssignedByUser()),
-				task.getPatient(), dateToString(task.getCreateDate()), dateToString(task.getUpdateDate()));
+				task.getTaskName(), task.getTaskDescription(), dateToString(Utils.TimestampToDate(task.getStartDate())), dateToString(Utils.TimestampToDate(task.getDueDate())),
+				dateToString(Utils.TimestampToDate(task.getCompletedDate())), getUserId(task.getAssignedToUser()), getUserId(task.getAssignedByUser()),
+				task.getPatient(), dateToString(Utils.TimestampToDate(task.getCreateDate())), dateToString(Utils.TimestampToDate(task.getUpdateDate())));
 	    String simpleProc = "{ call sp_ins_task(" + paramString + ") }";
 	    CallableStatement cs = conn.prepareCall(simpleProc);
 	    cs.execute();
@@ -191,9 +191,9 @@ public class SqlHelper {
 	public void updateTask(int taskid, Task task) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		Connection conn = getMySqlConnection();
 		String paramString = String.format("'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s'", taskid,
-				task.getTaskName(), task.getTaskDescription(), dateToString(task.getStartDate()), dateToString(task.getDueDate()),
-						dateToString(task.getCompletedDate()), getUserId(task.getAssignedToUser()), getUserId(task.getAssignedByUser()),
-				task.getPatient(), dateToString(task.getCreateDate()), dateToString(task.getUpdateDate()));
+				task.getTaskName(), task.getTaskDescription(), dateToString(Utils.TimestampToDate(task.getStartDate())), dateToString(Utils.TimestampToDate(task.getDueDate())),
+						dateToString(Utils.TimestampToDate(task.getCompletedDate())), getUserId(task.getAssignedToUser()), getUserId(task.getAssignedByUser()),
+				task.getPatient(), dateToString(Utils.TimestampToDate(task.getCreateDate())), dateToString(Utils.TimestampToDate(task.getUpdateDate())));
 	    String simpleProc = "{ call sp_upd_task(" + paramString + ") }";
 	    CallableStatement cs = conn.prepareCall(simpleProc);
 	    cs.execute();
@@ -237,11 +237,11 @@ public class SqlHelper {
 				allTasks.remove(i);
 			}
 			
-			if(category.toUpperCase().equals("COMPLETED") && allTasks.get(i).getCompletedDate() == null) {
+			if(category.toUpperCase().equals("COMPLETED") && allTasks.get(i).getCompletedDate() == 0) {
 				allTasks.remove(i);
 			}
 			
-			if(category.toUpperCase().equals("OUTSTANDING")  && allTasks.get(i).getCompletedDate() != null) {
+			if(category.toUpperCase().equals("OUTSTANDING")  && allTasks.get(i).getCompletedDate() != 0) {
 				allTasks.remove(i);	
 			}
 		}
@@ -265,7 +265,7 @@ public class SqlHelper {
 		for(int i = 0;i<allTasks.size();i++) {
 			if(allTasks.get(i).getTaskId() == taskid) {
 				Task t = allTasks.get(i);
-				t.setCompletedDate(new Date());
+				t.setCompletedDate(Utils.DateToTimeStamp(new Date()));
 				updateTask(t.getTaskId(), t);
 			}
 		}

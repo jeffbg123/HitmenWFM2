@@ -32,10 +32,16 @@ public class HitmenWFMController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/user",method=RequestMethod.POST)
-	public @ResponseBody User createUser(@RequestBody User user) throws Exception {
-		SqlHelper sh = new SqlHelper();
-		sh.InsertUser(user);
-		return user;
+	public @ResponseBody ResponseEntity<?> createUser(@RequestBody User user) throws Exception {
+		try {
+			SqlHelper sh = new SqlHelper();
+			sh.InsertUser(user);
+			return new ResponseEntity<>(user, HttpStatus.OK);
+		}catch(Exception ex){
+	        String errorMessage;
+	        errorMessage = ex + " <== error";
+	        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+	    }	
 	}
 	
 	/**
@@ -48,9 +54,20 @@ public class HitmenWFMController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/user/{username}",method=RequestMethod.GET)
-	public @ResponseBody User getUserUsername(@PathVariable String username) throws Exception {
-		SqlHelper sh = new SqlHelper();
-		return sh.getUserByUsername(username);
+	public @ResponseBody ResponseEntity<?> getUserUsername(@PathVariable String username) throws Exception {
+		try {
+			SqlHelper sh = new SqlHelper();
+			User toReturn = sh.getUserByUsername(username);
+			
+			if(toReturn != null)
+				return new ResponseEntity<>(toReturn, HttpStatus.OK);
+			
+			return new ResponseEntity<>("No User Found", HttpStatus.BAD_REQUEST);
+		}catch(Exception ex){
+	        String errorMessage;
+	        errorMessage = ex + " <== error";
+	        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+	    }	
 	}
 	
 	/**
@@ -62,11 +79,19 @@ public class HitmenWFMController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/user/forgot",method=RequestMethod.POST)
-	public @ResponseBody User userForgot(@RequestBody UserNameOnly userName) throws Exception {
-		SqlHelper sh = new SqlHelper();
-		User user = sh.getUserByUsername(userName.getUserName());
-		user.emailForgotPassword();
-		return user;
+	public @ResponseBody ResponseEntity<?> userForgot(@RequestBody UserNameOnly userName) throws Exception {
+		try {
+			SqlHelper sh = new SqlHelper();
+			User user = sh.getUserByUsername(userName.getUserName());
+			user.emailForgotPassword();
+			if(user != null)
+				return new ResponseEntity<>(user, HttpStatus.OK);
+			return new ResponseEntity<>("No User Found", HttpStatus.BAD_REQUEST);
+		}catch(Exception ex){
+	        String errorMessage;
+	        errorMessage = ex + " <== error";
+	        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+	    }	
 	}
 	
 	/**
@@ -80,10 +105,19 @@ public class HitmenWFMController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/user/password",method=RequestMethod.POST)
-	public @ResponseBody User userSetPassword(@RequestBody PasswordInfo passwordInfo) throws Exception {
-		SqlHelper sh = new SqlHelper();
-		sh.updatePassword(passwordInfo.getUserName(), passwordInfo.getPassword());
-		return sh.getUserByUsername(passwordInfo.getUserName());		
+	public @ResponseBody ResponseEntity<?> userSetPassword(@RequestBody PasswordInfo passwordInfo) throws Exception {
+		try {
+			SqlHelper sh = new SqlHelper();
+			sh.updatePassword(passwordInfo.getUserName(), passwordInfo.getPassword());
+			User user = sh.getUserByUsername(passwordInfo.getUserName());
+			if(user != null)
+				return new ResponseEntity<>(user, HttpStatus.OK);
+			return new ResponseEntity<>("No User Found", HttpStatus.BAD_REQUEST);
+		}catch(Exception ex){
+	        String errorMessage;
+	        errorMessage = ex + " <== error";
+	        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+	    }	
 	}
 	
 	/**
@@ -96,12 +130,18 @@ public class HitmenWFMController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/user/login",method=RequestMethod.POST)
-	public @ResponseBody User userLogin(@RequestBody PasswordInfo loginInfo) throws Exception {
-		SqlHelper sh = new SqlHelper();
-		User user = sh.getUserByUsername(loginInfo.getUserName());
-		if(user.getPassword().equals(loginInfo.getPassword()))
-				return user;
-		return null;
+	public @ResponseBody ResponseEntity<?> userLogin(@RequestBody PasswordInfo loginInfo) throws Exception {
+		try {
+			SqlHelper sh = new SqlHelper();
+			User user = sh.getUserByUsername(loginInfo.getUserName());
+			if(user.getPassword().equals(loginInfo.getPassword()))
+				return new ResponseEntity<>(user, HttpStatus.OK);
+			return new ResponseEntity<>("Login Failed: Wrong username or password", HttpStatus.BAD_REQUEST);
+		}catch(Exception ex){
+	        String errorMessage;
+	        errorMessage = ex + " <== error";
+	        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+	    }	
 	}
 	
 	/**
@@ -114,10 +154,18 @@ public class HitmenWFMController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/user/update",method=RequestMethod.POST)
-	public @ResponseBody User userUpdate(@RequestBody User user) throws Exception {
-		SqlHelper sh = new SqlHelper();
-		sh.updateUser(user);
-		return user;
+	public @ResponseBody ResponseEntity<?> userUpdate(@RequestBody User user) throws Exception {
+		try {
+			SqlHelper sh = new SqlHelper();
+			sh.updateUser(user);
+			if(user != null)
+				return new ResponseEntity<>(user, HttpStatus.OK);
+			return new ResponseEntity<>("No User Found", HttpStatus.BAD_REQUEST);
+		}catch(Exception ex){
+	        String errorMessage;
+	        errorMessage = ex + " <== error";
+	        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+	    }	
 	}
 	
 	//END: /USER
@@ -135,10 +183,18 @@ public class HitmenWFMController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/tasks",method=RequestMethod.POST)
-	public @ResponseBody Task createTask(@RequestBody Task task) throws Exception {
-		SqlHelper sh = new SqlHelper();
-		sh.InsertTask(task);
-		return task;
+	public @ResponseBody ResponseEntity<?> createTask(@RequestBody Task task) throws Exception {
+		try {
+			SqlHelper sh = new SqlHelper();
+			sh.InsertTask(task);
+			if(task != null)
+				return new ResponseEntity<>(task, HttpStatus.OK);
+			return new ResponseEntity<>("No Task Found", HttpStatus.BAD_REQUEST);
+		}catch(Exception ex){
+	        String errorMessage;
+	        errorMessage = ex + " <== error";
+	        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+	    }	
 	}
 	
 	/**
@@ -151,10 +207,18 @@ public class HitmenWFMController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/tasks/{taskid}",method=RequestMethod.POST)
-	public @ResponseBody Task updateTask(@PathVariable int taskid, @RequestBody Task task) throws Exception {
-		SqlHelper sh = new SqlHelper();
-		sh.updateTask(taskid, task);
-		return task;		
+	public @ResponseBody ResponseEntity<?> updateTask(@PathVariable int taskid, @RequestBody Task task) throws Exception {
+		try {
+			SqlHelper sh = new SqlHelper();
+			sh.updateTask(taskid, task);
+			if(task != null)
+				return new ResponseEntity<>(task, HttpStatus.OK);
+			return new ResponseEntity<>("No Task Found", HttpStatus.BAD_REQUEST);
+		}catch(Exception ex){
+	        String errorMessage;
+	        errorMessage = ex + " <== error";
+	        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+	    }	
 	}
 	
 	/**
@@ -166,9 +230,18 @@ public class HitmenWFMController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/tasks",method=RequestMethod.GET)
-	public @ResponseBody List<Task> getTask() throws Exception {
-		SqlHelper sh = new SqlHelper();
-		return sh.getAllTasks();
+	public @ResponseBody ResponseEntity<?> getTask() throws Exception {
+		try {
+			SqlHelper sh = new SqlHelper();
+			List<Task> toReturn = sh.getAllTasks();
+			if(toReturn != null)
+				return new ResponseEntity<>(toReturn, HttpStatus.OK);
+			return new ResponseEntity<>("No Tasks Found", HttpStatus.BAD_REQUEST);
+		}catch(Exception ex){
+	        String errorMessage;
+	        errorMessage = ex + " <== error";
+	        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+	    }	
 	}
 	
 	/**
@@ -180,9 +253,18 @@ public class HitmenWFMController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/tasks/{username}/{category}",method=RequestMethod.GET)
-	public @ResponseBody List<Task> getTaskByUsernameAndCategory(@PathVariable String username, @PathVariable String category) throws Exception {
-		SqlHelper sh = new SqlHelper();
-		return sh.getAllTasks(username, category);
+	public @ResponseBody ResponseEntity<?> getTaskByUsernameAndCategory(@PathVariable String username, @PathVariable String category) throws Exception {
+		try {
+			SqlHelper sh = new SqlHelper();
+			List<Task> toReturn = sh.getAllTasks(username, category);
+			if(toReturn != null)
+				return new ResponseEntity<>(toReturn, HttpStatus.OK);
+			return new ResponseEntity<>("No Tasks Found", HttpStatus.BAD_REQUEST);
+		}catch(Exception ex){
+	        String errorMessage;
+	        errorMessage = ex + " <== error";
+	        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+	    }	
 	}
 	
 	/**
@@ -195,10 +277,16 @@ public class HitmenWFMController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/tasks/{taskid}",method=RequestMethod.DELETE)
-	public @ResponseBody int deleteTask(@PathVariable int taskid) throws Exception {
-		SqlHelper sh = new SqlHelper();
-		sh.deleteTask(taskid);
-		return taskid;
+	public @ResponseBody ResponseEntity<?> deleteTask(@PathVariable int taskid) throws Exception {
+		try {
+			SqlHelper sh = new SqlHelper();
+			sh.deleteTask(taskid);
+			return new ResponseEntity<>(taskid, HttpStatus.OK);
+		}catch(Exception ex){
+	        String errorMessage;
+	        errorMessage = ex + " <== error";
+	        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+	    }	
 	}
 	
 	/**
@@ -210,10 +298,16 @@ public class HitmenWFMController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/tasks/{taskid}/complete",method=RequestMethod.POST)
-	public @ResponseBody int markTaskComplete(@PathVariable int taskid) throws Exception {
-		SqlHelper sh = new SqlHelper();
-		sh.markTaskComplete(taskid);
-		return taskid;
+	public @ResponseBody ResponseEntity<?> markTaskComplete(@PathVariable int taskid) throws Exception {
+		try {
+			SqlHelper sh = new SqlHelper();
+			sh.markTaskComplete(taskid);
+			return new ResponseEntity<>(taskid, HttpStatus.OK);
+		}catch(Exception ex){
+	        String errorMessage;
+	        errorMessage = ex + " <== error";
+	        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+	    }	
 	}
 	
 	//END: /TASKS
@@ -231,9 +325,18 @@ public class HitmenWFMController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/templates",method=RequestMethod.GET)
-	public @ResponseBody List<Template> getTemplates() throws Exception {
-		SqlHelper sh = new SqlHelper();
-		return sh.getAllTemplates();
+	public @ResponseBody ResponseEntity<?> getTemplates() throws Exception {
+		try {
+			SqlHelper sh = new SqlHelper();
+			List<Template> toReturn = sh.getAllTemplates();
+			if(toReturn != null)
+				return new ResponseEntity<>(toReturn, HttpStatus.OK);
+			return new ResponseEntity<>("No Templates Found", HttpStatus.BAD_REQUEST);
+		}catch(Exception ex){
+	        String errorMessage;
+	        errorMessage = ex + " <== error";
+	        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+	    }	
 	}
 	
 	/**
@@ -245,9 +348,18 @@ public class HitmenWFMController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/templates/{templateid}",method=RequestMethod.GET)
-	public @ResponseBody Template getTemplateById(@PathVariable int templateId) throws Exception {
-		SqlHelper sh = new SqlHelper();
-		return sh.getTemplate(templateId);
+	public @ResponseBody ResponseEntity<?> getTemplateById(@PathVariable int templateId) throws Exception {
+		try {
+			SqlHelper sh = new SqlHelper();
+			Template toReturn = sh.getTemplate(templateId);
+			if(toReturn != null)
+				return new ResponseEntity<>(toReturn, HttpStatus.OK);
+			return new ResponseEntity<>("No Template Found", HttpStatus.BAD_REQUEST);
+		}catch(Exception ex){
+	        String errorMessage;
+	        errorMessage = ex + " <== error";
+	        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+	    }	
 	}
 
 	//END: /TEMPLATES

@@ -35,13 +35,12 @@ public class User implements Serializable   {
 	private String zip;
 	private String cellPhone;
 	private String homePhone;
-	private Date createTime;
+	private long createTime;
 	private int userTypeId;
-	private Date updateTime;
+	private long updateTime;
 	private int userDetailsId;
-	
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="CST")
-	private Date birthDate;
+	//@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="CST")
+	private long birthDate;
 	
 	public User() {
 		
@@ -64,7 +63,7 @@ public class User implements Serializable   {
 		setZip(zip);
 		setCellPhone(cellPhone);
 		setHomePhone(homePhone);
-		setBirthDate(birthDate);
+		setBirthDate(Utils.DateToTimeStamp(birthDate));
 	}
 
 	public User(ResultSet rs1) throws SQLException {
@@ -72,13 +71,13 @@ public class User implements Serializable   {
 		setUserName(rs1.getString("username"));
 		setEmail(rs1.getString("email"));
 		setPassword(rs1.getString("password"));
-		setCreateTime(rs1.getDate("create_time"));
+		setCreateTime(Utils.DateToTimeStamp(rs1.getDate("create_time")));
 		setUserTypeId(rs1.getInt("userTypeID"));
-		setUpdateTime(rs1.getDate("UpdateTime"));
+		setUpdateTime(Utils.DateToTimeStamp(rs1.getDate("UpdateTime")));
 		setUserDetailsID(rs1.getInt("userDetailsID"));
 	}
 	
-	public void setCreateTime(Date createTime) {
+	public void setCreateTime(long createTime) {
 		this.createTime = createTime;
 	}
 	
@@ -86,7 +85,7 @@ public class User implements Serializable   {
 		this.userTypeId = userTypeId;
 	}
 	
-	public void setUpdateTime(Date updateTime) {
+	public void setUpdateTime(long updateTime) {
 		this.updateTime = updateTime;
 	}
 	
@@ -102,17 +101,17 @@ public class User implements Serializable   {
 		this.id = id;
 	}
 
-	public Date getBirthDate() {
+	public long getBirthDate() {
 		return birthDate;
 	}
 	
-	public void setBirthDate(Date birthDate) {
+	public void setBirthDate(long birthDate) {
 		this.birthDate = birthDate;
 	}
 	
 	public String getBirthDateMysqlString() {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		return sdf.format(getBirthDate());
+		return sdf.format(Utils.TimestampToDate(getBirthDate()));
 	}
 	
 	public void setUserName(String userName) {

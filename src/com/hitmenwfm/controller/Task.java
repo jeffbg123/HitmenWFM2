@@ -10,16 +10,16 @@ public class Task implements Serializable {
 	private int taskId;
 	private String taskName;
 	private String taskDescription;
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="CST")
-	private Date startDate;
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="CST")
-	private Date dueDate;
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="CST")
-	private Date completedDate = new Date(1000,1,1);
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="CST")
-	private Date createDate = new Date();
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="CST")
-	private Date updateDate = new Date();
+	//@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="CST")
+	private long startDate;
+	//@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="CST")
+	private long dueDate;
+	//@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="CST")
+	private long completedDate = 0;
+	//@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="CST")
+	private long createDate = 0;
+	//@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="CST")
+	private long updateDate = 0;
 	private String assignedToUser;
 	private String assignedByUser;
 	private int assignedToUserId = 0;
@@ -33,11 +33,11 @@ public class Task implements Serializable {
 		this.taskId = taskId;
 		this.taskName = taskName;
 		this.taskDescription = taskDescription;
-		this.startDate = startDate;
-		this.dueDate = dueDate;
-		this.completedDate = completedDate;
-		this.createDate = createDate;
-		this.updateDate = updateDate;
+		this.startDate = Utils.DateToTimeStamp(startDate);
+		this.dueDate = Utils.DateToTimeStamp(dueDate);
+		this.completedDate = Utils.DateToTimeStamp(completedDate);
+		this.createDate = Utils.DateToTimeStamp(createDate);
+		this.updateDate = Utils.DateToTimeStamp(updateDate);
 		this.assignedToUserId = assignedToUserId;
 		this.assignedByUserId = assignedByUserId;
 		this.assignedByUser = assignedByUser;
@@ -71,31 +71,31 @@ public class Task implements Serializable {
 		this.taskDescription = taskDescription;
 	}
 	
-	public Date getStartDate() {
+	public long getStartDate() {
 		return startDate;
 	}
 	
-	public void setStartDate(Date startDate) {
+	public void setStartDate(long startDate) {
 		this.startDate = startDate;
 	}
 	
-	public Date getCompletedDate() {
+	public long getCompletedDate() {
 		return completedDate;
 	}
 	
-	public void setCompletedDate(Date CompletedDate) {
+	public void setCompletedDate(long CompletedDate) {
 		this.completedDate = CompletedDate;
 	}
 	
-	public Date getCreateDate() {
+	public long getCreateDate() {
 		return createDate;
 	}
 	
-	public void setCreateDate(Date createDate) {
+	public void setCreateDate(long createDate) {
 		this.createDate = createDate;
 	}
 	
-	public Date getUpdateDate() {
+	public long getUpdateDate() {
 		return updateDate;
 	}
 	
@@ -103,11 +103,11 @@ public class Task implements Serializable {
 		this.updateDate = updateDate;
 	}
 	
-	public Date getDueDate() {
+	public long getDueDate() {
 		return dueDate;
 	}
 	
-	public void setDueDate(Date dueDate) {
+	public void setDueDate(long dueDate) {
 		this.dueDate = dueDate;
 	}
 	

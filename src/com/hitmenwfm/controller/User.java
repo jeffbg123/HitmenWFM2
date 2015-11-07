@@ -66,15 +66,39 @@ public class User implements Serializable   {
 		setBirthDate(Utils.DateToTimeStamp(birthDate));
 	}
 
-	public User(ResultSet rs1) throws SQLException {
-		setId(rs1.getInt("id"));
-		setUserName(rs1.getString("username"));
-		setEmail(rs1.getString("email"));
-		setPassword(rs1.getString("password"));
-		setCreateTime(Utils.DateToTimeStamp(rs1.getDate("create_time")));
-		setUserTypeId(rs1.getInt("userTypeID"));
-		setUpdateTime(Utils.DateToTimeStamp(rs1.getDate("UpdateTime")));
-		setUserDetailsID(rs1.getInt("userDetailsID"));
+	public User(ResultSet rs1, Boolean all) throws SQLException {
+		if(all) {
+			setId(rs1.getInt("id"));
+			setUserName(rs1.getString("username"));
+			setEmail(rs1.getString("email"));
+			setPassword(rs1.getString("password"));
+			setFirstName(rs1.getString("FirstName"));
+			setLastName(rs1.getString("LastName"));
+			setMiddleName(rs1.getString("MiddleName"));
+			setStreetAddressLine1(rs1.getString("StreetAddressLine1"));
+			setStreetAddressLine2(rs1.getString("StreetAddressLine2"));
+			setStreetAddressLine3(rs1.getString("StreetAddressLine3"));
+			setCity(rs1.getString("City"));
+			setZip(rs1.getString("Zip"));
+			setCellPhone(rs1.getString("CellPhone"));
+			setHomePhone(rs1.getString("HomePhone"));
+			setBirthDate(Utils.DateToTimeStamp(rs1.getDate("Birthdate")));
+			setCreateTime(Utils.DateToTimeStamp(rs1.getDate("create_time")));
+			setUserTypeId(rs1.getInt("userTypeID"));
+			setUpdateTime(Utils.DateToTimeStamp(rs1.getDate("UpdateTime")));
+			setUserDetailsID(rs1.getInt("userDetailsID"));
+		}
+		else {
+			setId(rs1.getInt("id"));
+			setUserName(rs1.getString("username"));
+			setEmail(rs1.getString("email"));
+			setPassword(rs1.getString("password"));
+			setCreateTime(Utils.DateToTimeStamp(rs1.getDate("create_time")));
+			setUserTypeId(rs1.getInt("userTypeID"));
+			setUpdateTime(Utils.DateToTimeStamp(rs1.getDate("UpdateTime")));
+			setUserDetailsID(rs1.getInt("userDetailsID"));
+			
+		}
 	}
 	
 	public void setCreateTime(long createTime) {

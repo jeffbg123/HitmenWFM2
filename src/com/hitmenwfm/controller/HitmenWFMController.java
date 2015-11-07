@@ -23,7 +23,9 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class HitmenWFMController {
 	private static AuthenticationManager am = new SampleAuthenticationManager();
-	
+	public String ErrorToJson(String error) {
+		return "{ \"message\":\"" + error + "\"}";
+	}
 	
 	//--------------------------------------------------------------------------------
 	//START: /USER
@@ -45,7 +47,7 @@ public class HitmenWFMController {
 		}catch(Exception ex){
 	        String errorMessage;
 	        errorMessage = ex + " <== error";
-	        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+	        return new ResponseEntity<>(ErrorToJson(errorMessage), HttpStatus.BAD_REQUEST);
 	    }	
 	}
 	
@@ -58,7 +60,7 @@ public class HitmenWFMController {
 		}catch(Exception ex){
 	        String errorMessage;
 	        errorMessage = ex + " <== error";
-	        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+	        return new ResponseEntity<>(ErrorToJson(errorMessage), HttpStatus.BAD_REQUEST);
 	    }	
 	}
 	
@@ -80,11 +82,11 @@ public class HitmenWFMController {
 			if(toReturn != null)
 				return new ResponseEntity<>(toReturn, HttpStatus.OK);
 			
-			return new ResponseEntity<>("No User Found", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(ErrorToJson("No User Found"), HttpStatus.BAD_REQUEST);
 		}catch(Exception ex){
 	        String errorMessage;
 	        errorMessage = ex + " <== error";
-	        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+	        return new ResponseEntity<>(ErrorToJson(errorMessage), HttpStatus.BAD_REQUEST);
 	    }	
 	}
 	
@@ -104,11 +106,11 @@ public class HitmenWFMController {
 			user.emailForgotPassword();
 			if(user != null)
 				return new ResponseEntity<>(user, HttpStatus.OK);
-			return new ResponseEntity<>("No User Found", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(ErrorToJson("No User Found"), HttpStatus.BAD_REQUEST);
 		}catch(Exception ex){
 	        String errorMessage;
 	        errorMessage = ex + " <== error";
-	        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+	        return new ResponseEntity<>(ErrorToJson(errorMessage), HttpStatus.BAD_REQUEST);
 	    }	
 	}
 	
@@ -130,11 +132,11 @@ public class HitmenWFMController {
 			User user = sh.getUserByUsername(passwordInfo.getUserName());
 			if(user != null)
 				return new ResponseEntity<>(user, HttpStatus.OK);
-			return new ResponseEntity<>("No User Found", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(ErrorToJson("No User Found"), HttpStatus.BAD_REQUEST);
 		}catch(Exception ex){
 	        String errorMessage;
 	        errorMessage = ex + " <== error";
-	        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+	        return new ResponseEntity<>(ErrorToJson(errorMessage), HttpStatus.BAD_REQUEST);
 	    }	
 	}
 	
@@ -153,7 +155,7 @@ public class HitmenWFMController {
 			SqlHelper sh = new SqlHelper();
 			User user = sh.getUserByUsername(loginInfo.getUserName());
 			if(!loginInfo.getPassword().equals(user.getPassword()))
-				return new ResponseEntity<>("Login Failed: Wrong username or password", HttpStatus.BAD_REQUEST);
+				return new ResponseEntity<>(ErrorToJson("Login Failed: Wrong username or password"), HttpStatus.BAD_REQUEST);
 	        Authentication request = new UsernamePasswordAuthenticationToken(loginInfo.getUserName(), loginInfo.getPassword());
 	        Authentication result = am.authenticate(request);
 	        SecurityContextHolder.getContext().setAuthentication(result);
@@ -164,7 +166,7 @@ public class HitmenWFMController {
 	      } catch(Exception ex) {
 	    	  String errorMessage;
 		        errorMessage = ex + " <== error";
-		        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+		        return new ResponseEntity<>(ErrorToJson(errorMessage), HttpStatus.BAD_REQUEST);
 	      }
 			
 	}
@@ -179,7 +181,7 @@ public class HitmenWFMController {
 		}
 			
 
-        return new ResponseEntity<>("User not authenticated", HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(ErrorToJson("User not authenticated"), HttpStatus.UNAUTHORIZED);
 	}
 	
 	/**
@@ -198,11 +200,11 @@ public class HitmenWFMController {
 			sh.updateUser(user);
 			if(user != null)
 				return new ResponseEntity<>(user, HttpStatus.OK);
-			return new ResponseEntity<>("No User Found", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(ErrorToJson("No User Found"), HttpStatus.BAD_REQUEST);
 		}catch(Exception ex){
 	        String errorMessage;
 	        errorMessage = ex + " <== error";
-	        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+	        return new ResponseEntity<>(ErrorToJson(errorMessage), HttpStatus.BAD_REQUEST);
 	    }	
 	}
 	
@@ -227,11 +229,11 @@ public class HitmenWFMController {
 			sh.InsertTask(task);
 			if(task != null)
 				return new ResponseEntity<>(task, HttpStatus.OK);
-			return new ResponseEntity<>("No Task Found", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(ErrorToJson("No Task Found"), HttpStatus.BAD_REQUEST);
 		}catch(Exception ex){
 	        String errorMessage;
 	        errorMessage = ex + " <== error";
-	        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+	        return new ResponseEntity<>(ErrorToJson(errorMessage), HttpStatus.BAD_REQUEST);
 	    }	
 	}
 	
@@ -251,11 +253,11 @@ public class HitmenWFMController {
 			sh.updateTask(taskid, task);
 			if(task != null)
 				return new ResponseEntity<>(task, HttpStatus.OK);
-			return new ResponseEntity<>("No Task Found", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(ErrorToJson("No Task Found"), HttpStatus.BAD_REQUEST);
 		}catch(Exception ex){
 	        String errorMessage;
 	        errorMessage = ex + " <== error";
-	        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+	        return new ResponseEntity<>(ErrorToJson(errorMessage), HttpStatus.BAD_REQUEST);
 	    }	
 	}
 	
@@ -274,11 +276,11 @@ public class HitmenWFMController {
 			List<Task> toReturn = sh.getAllTasks();
 			if(toReturn != null)
 				return new ResponseEntity<>(toReturn, HttpStatus.OK);
-			return new ResponseEntity<>("No Tasks Found", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(ErrorToJson("No Tasks Found"), HttpStatus.BAD_REQUEST);
 		}catch(Exception ex){
 	        String errorMessage;
 	        errorMessage = ex + " <== error";
-	        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+	        return new ResponseEntity<>(ErrorToJson(errorMessage), HttpStatus.BAD_REQUEST);
 	    }	
 	}
 	
@@ -297,11 +299,11 @@ public class HitmenWFMController {
 			List<Task> toReturn = sh.getAllTasks(username, category);
 			if(toReturn != null)
 				return new ResponseEntity<>(toReturn, HttpStatus.OK);
-			return new ResponseEntity<>("No Tasks Found", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(ErrorToJson("No Tasks Found"), HttpStatus.BAD_REQUEST);
 		}catch(Exception ex){
 	        String errorMessage;
 	        errorMessage = ex + " <== error";
-	        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+	        return new ResponseEntity<>(ErrorToJson(errorMessage), HttpStatus.BAD_REQUEST);
 	    }	
 	}
 	
@@ -323,7 +325,7 @@ public class HitmenWFMController {
 		}catch(Exception ex){
 	        String errorMessage;
 	        errorMessage = ex + " <== error";
-	        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+	        return new ResponseEntity<>(ErrorToJson(errorMessage), HttpStatus.BAD_REQUEST);
 	    }	
 	}
 	
@@ -344,7 +346,7 @@ public class HitmenWFMController {
 		}catch(Exception ex){
 	        String errorMessage;
 	        errorMessage = ex + " <== error";
-	        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+	        return new ResponseEntity<>(ErrorToJson(errorMessage), HttpStatus.BAD_REQUEST);
 	    }	
 	}
 	
@@ -369,11 +371,11 @@ public class HitmenWFMController {
 			List<Template> toReturn = sh.getAllTemplates();
 			if(toReturn != null)
 				return new ResponseEntity<>(toReturn, HttpStatus.OK);
-			return new ResponseEntity<>("No Templates Found", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(ErrorToJson("No Templates Found"), HttpStatus.BAD_REQUEST);
 		}catch(Exception ex){
 	        String errorMessage;
 	        errorMessage = ex + " <== error";
-	        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+	        return new ResponseEntity<>(ErrorToJson(errorMessage), HttpStatus.BAD_REQUEST);
 	    }	
 	}
 	
@@ -392,11 +394,11 @@ public class HitmenWFMController {
 			Template toReturn = sh.getTemplate(templateId);
 			if(toReturn != null)
 				return new ResponseEntity<>(toReturn, HttpStatus.OK);
-			return new ResponseEntity<>("No Template Found", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(ErrorToJson("No Template Found"), HttpStatus.BAD_REQUEST);
 		}catch(Exception ex){
 	        String errorMessage;
 	        errorMessage = ex + " <== error";
-	        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+	        return new ResponseEntity<>(ErrorToJson(errorMessage), HttpStatus.BAD_REQUEST);
 	    }	
 	}
 

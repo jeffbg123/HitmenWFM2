@@ -125,12 +125,12 @@ public class SqlHelper {
 		List<User> toReturn = new ArrayList<User>();
 		
 		Connection conn = getMySqlConnection();
-	    String simpleProc = "{ call sp_sel_user() }";
+	    String simpleProc = "{ call sp_UI_GetAllUsers() }";
 	    CallableStatement cs = conn.prepareCall(simpleProc);
 	    cs.execute();
 	    ResultSet rs1 = cs.getResultSet();
 	    while(rs1.next()) {
-		    User toAdd = new User(rs1);
+		    User toAdd = new User(rs1,true);
 		    toReturn.add(toAdd);
 	    }
 	    conn.close();

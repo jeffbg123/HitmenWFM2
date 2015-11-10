@@ -1,6 +1,11 @@
 package com.hitmenwfm.controller;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -9,7 +14,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -22,7 +31,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class HitmenWFMController {
-	private static AuthenticationManager am = new SampleAuthenticationManager();
 	public String ErrorToJson(String error) {
 		return "{ \"message\":\"" + error + "\"}";
 	}
@@ -150,18 +158,14 @@ public class HitmenWFMController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/user/login",method=RequestMethod.POST)
-	public @ResponseBody ResponseEntity<?> userLogin(@RequestBody PasswordInfo loginInfo) throws Exception {
+	public @ResponseBody ResponseEntity<?> userLogin(@RequestBody PasswordInfo loginInfo, HttpServletRequest request) throws Exception {
 		try {
 			SqlHelper sh = new SqlHelper();
 			User user = sh.getUserByUsername(loginInfo.getUserName());
 			if(!loginInfo.getPassword().equals(user.getPassword()))
 				return new ResponseEntity<>(ErrorToJson("Login Failed: Wrong username or password"), HttpStatus.BAD_REQUEST);
-	        Authentication request = new UsernamePasswordAuthenticationToken(loginInfo.getUserName(), loginInfo.getPassword());
-	        Authentication result = am.authenticate(request);
-	        SecurityContextHolder.getContext().setAuthentication(result);
-
-		    System.out.println("Successfully authenticated. Security context contains: " +
-		              SecurityContextHolder.getContext().getAuthentication());
+			login(request, user.getuserName(), user.getPassword());
+		    System.out.println("Successfully authenticated");
 		    return new ResponseEntity<>(user, HttpStatus.OK);
 	      } catch(Exception ex) {
 	    	  String errorMessage;
@@ -171,17 +175,37 @@ public class HitmenWFMController {
 			
 	}
 	
+	public void login(HttpServletRequest request, String userName, String password)
+	{
+		Collection<GrantedAuthority> a=new ArrayList<GrantedAuthority>();
+	      a.add(new GrantedAuthorityImpl("admin"));
+		UserDetails user = new org.springframework.security.core.userdetails.User(userName, password, true, true, true, true, a);
+		Authentication authentication = new UsernamePasswordAuthenticationToken(
+                user, user.getPassword(), user.getAuthorities());
+		 SecurityContext securityContext = SecurityContextHolder.getContext();
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		HttpSession session = request.getSession(true);
+	    session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);	 
+	}
+	
 	@RequestMapping(value="/user/login",method=RequestMethod.GET)
-	public @ResponseBody ResponseEntity<?> userLoginGet() throws Exception {
-		if (SecurityContextHolder.getContext().getAuthentication() != null &&
-				SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
-			SqlHelper help = new SqlHelper();
-			User u = help.getUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
-			return new ResponseEntity<>(u, HttpStatus.OK);
-		}
-			
-
-        return new ResponseEntity<>(ErrorToJson("User not authenticated"), HttpStatus.UNAUTHORIZED);
+	public @ResponseBody ResponseEntity<?> userLoginGet(HttpServletRequest request) throws Exception {
+		try {
+			HttpSession session = request.getSession(true);
+			SecurityContext securityContext =(SecurityContext) session.getAttribute("SPRING_SECURITY_CONTEXT");
+			Authentication authentication = securityContext.getAuthentication();
+			if (authentication == null) {
+				return new ResponseEntity<>(ErrorToJson("No one is authenticated!"), HttpStatus.BAD_REQUEST);
+			}
+			String username = authentication.getName();
+			SqlHelper sh = new SqlHelper();
+			User toReturn = sh.getUserByUsername(username);
+			return new ResponseEntity<>(toReturn, HttpStatus.OK);
+		} catch(Exception ex) {
+	    	  String errorMessage;
+		        errorMessage = ex + " <== error";
+		        return new ResponseEntity<>(ErrorToJson(errorMessage), HttpStatus.BAD_REQUEST);
+	      }
 	}
 	
 	/**

@@ -408,8 +408,85 @@ public class HitmenWFMController {
 	//--------------------------------------------------------------------------------
 	//START: /REPORTS
 	
+	/**
+	 *   This will return a each user's # of outstanding/completed tasks, as well as the average time per completed task
+	 * 
+	 * 
+	 * @param 
+	 * @return List<UserReport>
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/reports",method=RequestMethod.GET)
+	public @ResponseBody ResponseEntity<?> getReports() throws Exception {
+		try {
+			SqlHelper sh = new SqlHelper();
+			List<UserReport> toReturn = sh.getUserReports();			
+			if(toReturn != null)
+				return new ResponseEntity<>(toReturn, HttpStatus.OK);
+			return new ResponseEntity<>(ErrorToJson("Problem generating reports!"), HttpStatus.BAD_REQUEST);
+		}catch(Exception ex){
+	        String errorMessage;
+	        errorMessage = ex + " <== error";
+	        return new ResponseEntity<>(ErrorToJson(errorMessage), HttpStatus.BAD_REQUEST);
+	    }	
+	}
+	
 	
 
 	//END: /REPORTS
+	//--------------------------------------------------------------------------------
+
+	//--------------------------------------------------------------------------------
+	//START: /PATIENTS
+	//GET /patients?name=XXX
+	/**
+	 *   This will return a list of all of the patients with a name containing the parameter
+	 * 
+	 * 
+	 * @param name String
+	 * @return List<String>
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/patients/name/{name}",method=RequestMethod.GET)
+	public @ResponseBody ResponseEntity<?> getPatientsByName(@PathVariable String name) throws Exception {
+		try {
+			FHIRHelper fh = new FHIRHelper();
+			List<String> patientNames = fh.getPatientNames(name);
+			if(patientNames != null)
+				return new ResponseEntity<>(patientNames, HttpStatus.OK);
+			return new ResponseEntity<>(ErrorToJson("Problem getting patients!"), HttpStatus.BAD_REQUEST);
+		}catch(Exception ex){
+	        String errorMessage;
+	        errorMessage = ex + " <== error";
+	        return new ResponseEntity<>(ErrorToJson(errorMessage), HttpStatus.BAD_REQUEST);
+	    }	
+	}
+	
+	
+	//GET /patients/<patient-id>  - for one patient's data
+	/**
+	 *   This will return the name of the patient with the given ID
+	 * 
+	 * 
+	 * @param int id
+	 * @return String
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/patients/id/{id}",method=RequestMethod.GET)
+	public @ResponseBody ResponseEntity<?> getPatientById(@PathVariable int id) throws Exception {
+		try {
+			FHIRHelper fh = new FHIRHelper();
+			String patientName = fh.getPatientById(id);
+			if(patientName != null)
+				return new ResponseEntity<>(patientName, HttpStatus.OK);
+			return new ResponseEntity<>(ErrorToJson("Problem getting patient!"), HttpStatus.BAD_REQUEST);
+		}catch(Exception ex){
+	        String errorMessage;
+	        errorMessage = ex + " <== error";
+	        return new ResponseEntity<>(ErrorToJson(errorMessage), HttpStatus.BAD_REQUEST);
+	    }	
+	}
+
+	//END: /PATIENTS
 	//--------------------------------------------------------------------------------
 }

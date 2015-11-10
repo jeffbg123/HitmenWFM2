@@ -148,6 +148,8 @@ public class SqlHelper {
 	}
 	
 	public String dateToString(Date d) {
+		if(d == null)
+			return "NULL";
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		return sdf.format(d);
 	}
@@ -182,6 +184,7 @@ public class SqlHelper {
 				task.getTaskName(), task.getTaskDescription(), dateToString(Utils.TimestampToDate(task.getStartDate())), dateToString(Utils.TimestampToDate(task.getDueDate())),
 				dateToString(Utils.TimestampToDate(task.getCompletedDate())), getUserId(task.getAssignedToUser()), getUserId(task.getAssignedByUser()),
 				task.getPatient(), dateToString(Utils.TimestampToDate(task.getCreateDate())), dateToString(Utils.TimestampToDate(task.getUpdateDate())));
+		paramString = paramString.replace("'NULL'", "NULL");
 	    String simpleProc = "{ call sp_ins_task(" + paramString + ") }";
 	    CallableStatement cs = conn.prepareCall(simpleProc);
 	    cs.execute();
@@ -194,6 +197,7 @@ public class SqlHelper {
 				task.getTaskName(), task.getTaskDescription(), dateToString(Utils.TimestampToDate(task.getStartDate())), dateToString(Utils.TimestampToDate(task.getDueDate())),
 						dateToString(Utils.TimestampToDate(task.getCompletedDate())), getUserId(task.getAssignedToUser()), getUserId(task.getAssignedByUser()),
 				task.getPatient(), dateToString(Utils.TimestampToDate(task.getCreateDate())), dateToString(Utils.TimestampToDate(task.getUpdateDate())));
+		paramString = paramString.replace("'NULL'", "NULL");
 	    String simpleProc = "{ call sp_upd_task(" + paramString + ") }";
 	    CallableStatement cs = conn.prepareCall(simpleProc);
 	    cs.execute();
@@ -212,11 +216,11 @@ public class SqlHelper {
 		    Task toAdd = new Task(rs1.getInt("id"),
 		    		rs1.getString("TaskName"),
 		    		rs1.getString("TaskDescription"),
-		    		rs1.getDate("StartDate"),
-		    		rs1.getDate("DueDate"),
-		    		rs1.getDate("CompletedDate"),
-		    		rs1.getDate("CreateDate"),
-		    		rs1.getDate("UpdateDate"),
+		    		rs1.getTimestamp("StartDate"),
+		    		rs1.getTimestamp("DueDate"),
+		    		rs1.getTimestamp("CompletedDate"),
+		    		rs1.getTimestamp("CreateDate"),
+		    		rs1.getTimestamp("UpdateDate"),
 		    		rs1.getInt("AssignedToUserId"),
 		    		getUsernameFromId(rs1.getInt("AssignedToUserId")),
 		    		rs1.getInt("AssignedByUserId"),
@@ -237,11 +241,11 @@ public class SqlHelper {
 				allTasks.remove(i);
 			}
 			
-			if(category.toUpperCase().equals("COMPLETED") && allTasks.get(i).getCompletedDate() == 0) {
+			else if(category.toUpperCase().equals("COMPLETED") && allTasks.get(i).getCompletedDate() == 0) {
 				allTasks.remove(i);
 			}
 			
-			if(category.toUpperCase().equals("OUTSTANDING")  && allTasks.get(i).getCompletedDate() != 0) {
+			else if(category.toUpperCase().equals("OUTSTANDING") && allTasks.get(i).getCompletedDate() > 0) {
 				allTasks.remove(i);	
 			}
 		}
@@ -279,5 +283,28 @@ public class SqlHelper {
 	public Template getTemplate(int templateId) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public List<UserReport> getUserReports() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		List<UserReport> toReturn = new ArrayList<UserReport>();
+		
+		List<User> users = getAllUsers();
+		List<Task> tasks = getAllTasks();
+		
+		for(int i = 0;i<users.size();i++) {
+			toReturn.add(new UserReport(users.get(i)));
+		}
+		
+		for(int i = 0;i<tasks.size();i++) {
+			for(int z = 0;z<toReturn.size();z++) {
+				toReturn.get(z).CheckThisTask(tasks.get(i));
+			}
+		}
+		
+		for(int i = 0;i<toReturn.size();i++) {
+			toReturn.get(i).Calculate();
+		}
+		
+		return toReturn;
 	}
 }

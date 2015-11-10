@@ -11,15 +11,15 @@ public class Task implements Serializable {
 	private String taskName;
 	private String taskDescription;
 	//@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="CST")
-	private long startDate;
+	private long startDate = Utils.DateToTimeStamp(new Date());
 	//@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="CST")
-	private long dueDate;
+	private long dueDate = Utils.DateToTimeStamp(new Date());
 	//@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="CST")
-	private long completedDate = 0;
+	private long completedDate  = 0;
 	//@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="CST")
-	private long createDate = 0;
+	private long createDate = Utils.DateToTimeStamp(new Date());
 	//@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="CST")
-	private long updateDate = 0;
+	private long updateDate = Utils.DateToTimeStamp(new Date());
 	private String assignedToUser;
 	private String assignedByUser;
 	private int assignedToUserId = 0;

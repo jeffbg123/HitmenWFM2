@@ -1,15 +1,10 @@
 package com.hitmenwfm.controller;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-public class Task implements Serializable {
-	private int taskId;
-	private String taskName;
-	private String taskDescription;
+public class TemplateInsert implements Serializable {
+	private String templateName;
 	//@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="CST")
 	private long startDate = Utils.DateToTimeStamp(new Date());
 	//@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="CST")
@@ -27,50 +22,15 @@ public class Task implements Serializable {
 	private int patient;
 	private String patientName;
 	
-	public Task() {
+	public TemplateInsert() {
 	}
 	
-	public Task(int taskId, String taskName, String taskDescription, Date startDate, Date dueDate, Date completedDate, Date createDate, Date updateDate, int assignedToUserId, String assignedToUser, int assignedByUserId, String assignedByUser, int patient, String patientName) {
-		this.taskId = taskId;
-		this.taskName = taskName;
-		this.taskDescription = taskDescription;
-		this.startDate = Utils.DateToTimeStamp(startDate);
-		this.dueDate = Utils.DateToTimeStamp(dueDate);
-		this.completedDate = Utils.DateToTimeStamp(completedDate);
-		this.createDate = Utils.DateToTimeStamp(createDate);
-		this.updateDate = Utils.DateToTimeStamp(updateDate);
-		this.assignedToUserId = assignedToUserId;
-		this.assignedByUserId = assignedByUserId;
-		this.assignedByUser = assignedByUser;
-		this.assignedToUser = assignedToUser;
-		this.patient = patient;
-		this.patientName = patientName;
+	public String getTemplateName() {
+		return templateName;
 	}
 	
-	
-	
-	public int getTaskId() {
-		return taskId;
-	}
-	
-	public void setTaskId(int taskId) {
-		this.taskId = taskId;
-	}
-	
-	public String getTaskName() {
-		return taskName;
-	}
-	
-	public void setTaskName(String taskName) {
-		this.taskName = taskName;
-	}
-	
-	public String getTaskDescription() {
-		return taskDescription;
-	}
-	
-	public void setTaskDescription(String taskDescription) {
-		this.taskDescription = taskDescription;
+	public void setTemplateName(String templateName) {
+		this.templateName = templateName;
 	}
 	
 	public long getStartDate() {

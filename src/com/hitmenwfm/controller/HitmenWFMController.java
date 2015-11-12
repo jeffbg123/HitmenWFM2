@@ -8,31 +8,32 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.GrantedAuthorityImpl;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class HitmenWFMController {
 	public String ErrorToJson(String error) {
 		return "{ \"message\":\"" + error + "\"}";
+	}
+	
+	public Boolean IsAnyoneLoggedIn() {
+		if (SecurityContextHolder.getContext().getAuthentication() != null &&
+				 SecurityContextHolder.getContext().getAuthentication().isAuthenticated())
+			return true;
+		return false;
 	}
 	
 	//--------------------------------------------------------------------------------
@@ -64,6 +65,9 @@ public class HitmenWFMController {
 		try {
 			SqlHelper sh = new SqlHelper();
 			List<User> allUsers = sh.getAllUsers();
+			for(int i = 0;i<allUsers.size();i++) {
+				allUsers.get(i).setPassword("***");
+			}
 			return new ResponseEntity<>(allUsers, HttpStatus.OK);
 		}catch(Exception ex){
 	        String errorMessage;
@@ -87,8 +91,10 @@ public class HitmenWFMController {
 			SqlHelper sh = new SqlHelper();
 			User toReturn = sh.getUserByUsername(username);
 			
-			if(toReturn != null)
+			if(toReturn != null) {
+				toReturn.setPassword("****");
 				return new ResponseEntity<>(toReturn, HttpStatus.OK);
+			}
 			
 			return new ResponseEntity<>(ErrorToJson("No User Found"), HttpStatus.BAD_REQUEST);
 		}catch(Exception ex){
@@ -112,8 +118,10 @@ public class HitmenWFMController {
 			SqlHelper sh = new SqlHelper();
 			User user = sh.getUserByUsername(userName.getUserName());
 			user.emailForgotPassword();
-			if(user != null)
+			if(user != null) {
+				user.setPassword("****");
 				return new ResponseEntity<>(user, HttpStatus.OK);
+			}
 			return new ResponseEntity<>(ErrorToJson("No User Found"), HttpStatus.BAD_REQUEST);
 		}catch(Exception ex){
 	        String errorMessage;
@@ -188,6 +196,17 @@ public class HitmenWFMController {
 	    session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);	 
 	}
 	
+	public String MyUsername(HttpServletRequest request) {
+		HttpSession session = request.getSession(true);
+		SecurityContext securityContext =(SecurityContext) session.getAttribute("SPRING_SECURITY_CONTEXT");
+		Authentication authentication = securityContext.getAuthentication();
+		if (authentication == null) {
+			return "NULL";
+		}
+		String username = authentication.getName();
+		return username;
+	}
+	
 	@RequestMapping(value="/user/login",method=RequestMethod.GET)
 	public @ResponseBody ResponseEntity<?> userLoginGet(HttpServletRequest request) throws Exception {
 		try {
@@ -249,6 +268,10 @@ public class HitmenWFMController {
 	@RequestMapping(value="/tasks",method=RequestMethod.POST)
 	public @ResponseBody ResponseEntity<?> createTask(@RequestBody Task task) throws Exception {
 		try {
+			if(!IsAnyoneLoggedIn()) {
+				return new ResponseEntity<>(ErrorToJson("No one is logged in!"), HttpStatus.PROXY_AUTHENTICATION_REQUIRED);
+			}
+			
 			SqlHelper sh = new SqlHelper();
 			sh.InsertTask(task);
 			if(task != null)
@@ -273,6 +296,9 @@ public class HitmenWFMController {
 	@RequestMapping(value="/tasks/{taskid}",method=RequestMethod.POST)
 	public @ResponseBody ResponseEntity<?> updateTask(@PathVariable int taskid, @RequestBody Task task) throws Exception {
 		try {
+			if(!IsAnyoneLoggedIn()) {
+				return new ResponseEntity<>(ErrorToJson("No one is logged in!"), HttpStatus.PROXY_AUTHENTICATION_REQUIRED);
+			}
 			SqlHelper sh = new SqlHelper();
 			sh.updateTask(taskid, task);
 			if(task != null)
@@ -296,6 +322,9 @@ public class HitmenWFMController {
 	@RequestMapping(value="/tasks",method=RequestMethod.GET)
 	public @ResponseBody ResponseEntity<?> getTask() throws Exception {
 		try {
+			if(!IsAnyoneLoggedIn()) {
+				return new ResponseEntity<>(ErrorToJson("No one is logged in!"), HttpStatus.PROXY_AUTHENTICATION_REQUIRED);
+			}
 			SqlHelper sh = new SqlHelper();
 			List<Task> toReturn = sh.getAllTasks();
 			if(toReturn != null)
@@ -319,6 +348,9 @@ public class HitmenWFMController {
 	@RequestMapping(value="/tasks/{username}/{category}",method=RequestMethod.GET)
 	public @ResponseBody ResponseEntity<?> getTaskByUsernameAndCategory(@PathVariable String username, @PathVariable String category) throws Exception {
 		try {
+			if(!IsAnyoneLoggedIn()) {
+				return new ResponseEntity<>(ErrorToJson("No one is logged in!"), HttpStatus.PROXY_AUTHENTICATION_REQUIRED);
+			}
 			SqlHelper sh = new SqlHelper();
 			List<Task> toReturn = sh.getAllTasks(username, category);
 			if(toReturn != null)
@@ -343,6 +375,9 @@ public class HitmenWFMController {
 	@RequestMapping(value="/tasks/{taskid}",method=RequestMethod.DELETE)
 	public @ResponseBody ResponseEntity<?> deleteTask(@PathVariable int taskid) throws Exception {
 		try {
+			if(!IsAnyoneLoggedIn()) {
+				return new ResponseEntity<>(ErrorToJson("No one is logged in!"), HttpStatus.PROXY_AUTHENTICATION_REQUIRED);
+			}
 			SqlHelper sh = new SqlHelper();
 			sh.deleteTask(taskid);
 			return new ResponseEntity<>(taskid, HttpStatus.OK);
@@ -364,6 +399,9 @@ public class HitmenWFMController {
 	@RequestMapping(value="/tasks/{taskid}/complete",method=RequestMethod.POST)
 	public @ResponseBody ResponseEntity<?> markTaskComplete(@PathVariable int taskid) throws Exception {
 		try {
+			if(!IsAnyoneLoggedIn()) {
+				return new ResponseEntity<>(ErrorToJson("No one is logged in!"), HttpStatus.PROXY_AUTHENTICATION_REQUIRED);
+			}
 			SqlHelper sh = new SqlHelper();
 			sh.markTaskComplete(taskid);
 			return new ResponseEntity<>(taskid, HttpStatus.OK);
@@ -391,6 +429,9 @@ public class HitmenWFMController {
 	@RequestMapping(value="/templates",method=RequestMethod.GET)
 	public @ResponseBody ResponseEntity<?> getTemplates() throws Exception {
 		try {
+			if(!IsAnyoneLoggedIn()) {
+				return new ResponseEntity<>(ErrorToJson("No one is logged in!"), HttpStatus.PROXY_AUTHENTICATION_REQUIRED);
+			}
 			SqlHelper sh = new SqlHelper();
 			List<Template> toReturn = sh.getAllTemplates();
 			if(toReturn != null)
@@ -412,10 +453,13 @@ public class HitmenWFMController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/templates/{templateid}",method=RequestMethod.GET)
-	public @ResponseBody ResponseEntity<?> getTemplateById(@PathVariable int templateId) throws Exception {
+	public @ResponseBody ResponseEntity<?> getTemplateById(@PathVariable int templateid) throws Exception {
 		try {
+			if(!IsAnyoneLoggedIn()) {
+				return new ResponseEntity<>(ErrorToJson("No one is logged in!"), HttpStatus.PROXY_AUTHENTICATION_REQUIRED);
+			}
 			SqlHelper sh = new SqlHelper();
-			Template toReturn = sh.getTemplate(templateId);
+			Template toReturn = sh.getTemplate(templateid);
 			if(toReturn != null)
 				return new ResponseEntity<>(toReturn, HttpStatus.OK);
 			return new ResponseEntity<>(ErrorToJson("No Template Found"), HttpStatus.BAD_REQUEST);
@@ -426,6 +470,22 @@ public class HitmenWFMController {
 	    }	
 	}
 
+	@RequestMapping(value="/templates",method=RequestMethod.POST)
+	public @ResponseBody ResponseEntity<?> insertTemplate(@RequestBody TemplateInsert templateInsert) throws Exception {
+		try {
+			if(!IsAnyoneLoggedIn()) {
+				return new ResponseEntity<>(ErrorToJson("No one is logged in!"), HttpStatus.PROXY_AUTHENTICATION_REQUIRED);
+			}
+			SqlHelper sh = new SqlHelper();
+			sh.insertTemplate(templateInsert);
+			return new ResponseEntity<>(templateInsert, HttpStatus.OK);
+		}catch(Exception ex){
+	        String errorMessage;
+	        errorMessage = ex + " <== error";
+	        return new ResponseEntity<>(ErrorToJson(errorMessage), HttpStatus.BAD_REQUEST);
+	    }	
+	}
+	
 	//END: /TEMPLATES
 	//--------------------------------------------------------------------------------
 	
@@ -443,6 +503,9 @@ public class HitmenWFMController {
 	@RequestMapping(value="/reports",method=RequestMethod.GET)
 	public @ResponseBody ResponseEntity<?> getReports() throws Exception {
 		try {
+			if(!IsAnyoneLoggedIn()) {
+				return new ResponseEntity<>(ErrorToJson("No one is logged in!"), HttpStatus.PROXY_AUTHENTICATION_REQUIRED);
+			}
 			SqlHelper sh = new SqlHelper();
 			List<UserReport> toReturn = sh.getUserReports();			
 			if(toReturn != null)
@@ -474,6 +537,9 @@ public class HitmenWFMController {
 	@RequestMapping(value="/patients/name/{name}",method=RequestMethod.GET)
 	public @ResponseBody ResponseEntity<?> getPatientsByName(@PathVariable String name) throws Exception {
 		try {
+			if(!IsAnyoneLoggedIn()) {
+				return new ResponseEntity<>(ErrorToJson("No one is logged in!"), HttpStatus.PROXY_AUTHENTICATION_REQUIRED);
+			}
 			FHIRHelper fh = new FHIRHelper();
 			List<String> patientNames = fh.getPatientNames(name);
 			if(patientNames != null)
@@ -499,6 +565,9 @@ public class HitmenWFMController {
 	@RequestMapping(value="/patients/id/{id}",method=RequestMethod.GET)
 	public @ResponseBody ResponseEntity<?> getPatientById(@PathVariable int id) throws Exception {
 		try {
+			if(!IsAnyoneLoggedIn()) {
+				return new ResponseEntity<>(ErrorToJson("No one is logged in!"), HttpStatus.PROXY_AUTHENTICATION_REQUIRED);
+			}
 			FHIRHelper fh = new FHIRHelper();
 			String patientName = fh.getPatientById(id);
 			if(patientName != null)

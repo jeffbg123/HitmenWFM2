@@ -180,10 +180,10 @@ public class SqlHelper {
 
 	public void InsertTask(Task task) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		Connection conn = getMySqlConnection();
-		String paramString = String.format("'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s'", 
+		String paramString = String.format("'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s'", 
 				task.getTaskName(), task.getTaskDescription(), dateToString(Utils.TimestampToDate(task.getStartDate())), dateToString(Utils.TimestampToDate(task.getDueDate())),
 				dateToString(Utils.TimestampToDate(task.getCompletedDate())), getUserId(task.getAssignedToUser()), getUserId(task.getAssignedByUser()),
-				task.getPatient(), dateToString(Utils.TimestampToDate(task.getCreateDate())), dateToString(Utils.TimestampToDate(task.getUpdateDate())));
+				task.getPatient(), dateToString(Utils.TimestampToDate(task.getCreateDate())), dateToString(Utils.TimestampToDate(task.getUpdateDate())), task.getPatientName());
 		paramString = paramString.replace("'NULL'", "NULL");
 	    String simpleProc = "{ call sp_ins_task(" + paramString + ") }";
 	    CallableStatement cs = conn.prepareCall(simpleProc);
@@ -193,10 +193,10 @@ public class SqlHelper {
 
 	public void updateTask(int taskid, Task task) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		Connection conn = getMySqlConnection();
-		String paramString = String.format("'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s'", taskid,
+		String paramString = String.format("'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s'", taskid,
 				task.getTaskName(), task.getTaskDescription(), dateToString(Utils.TimestampToDate(task.getStartDate())), dateToString(Utils.TimestampToDate(task.getDueDate())),
 						dateToString(Utils.TimestampToDate(task.getCompletedDate())), getUserId(task.getAssignedToUser()), getUserId(task.getAssignedByUser()),
-				task.getPatient(), dateToString(Utils.TimestampToDate(task.getCreateDate())), dateToString(Utils.TimestampToDate(task.getUpdateDate())));
+				task.getPatient(), dateToString(Utils.TimestampToDate(task.getCreateDate())), dateToString(Utils.TimestampToDate(task.getUpdateDate())), task.getPatientName());
 		paramString = paramString.replace("'NULL'", "NULL");
 	    String simpleProc = "{ call sp_upd_task(" + paramString + ") }";
 	    CallableStatement cs = conn.prepareCall(simpleProc);
@@ -225,7 +225,8 @@ public class SqlHelper {
 		    		getUsernameFromId(rs1.getInt("AssignedToUserId")),
 		    		rs1.getInt("AssignedByUserId"),
 		    		getUsernameFromId(rs1.getInt("AssignedByUserId")),
-		    		rs1.getInt("patientId"));
+		    		rs1.getInt("patientId"),
+		    		rs1.getString("PatientName"));
 		    toReturn.add(toAdd);
 	    }
 	    conn.close();
@@ -275,13 +276,30 @@ public class SqlHelper {
 		}
 	}
 
-	public List<Template> getAllTemplates() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Template> getAllTemplates() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		List<Template> toReturn = new ArrayList<Template>();
+		Connection conn = getMySqlConnection();
+	    String simpleProc = "{ call sp_sel_tasktemplate() }";
+	    CallableStatement cs = conn.prepareCall(simpleProc);
+	    cs.execute();
+	    ResultSet rs1 = cs.getResultSet();
+	    while(rs1.next()) {
+	    	Template toAdd = new Template(rs1);
+		    
+		    toReturn.add(toAdd);
+	    }
+	    conn.close();
+		
+		return toReturn;
 	}
 
-	public Template getTemplate(int templateId) {
-		// TODO Auto-generated method stub
+	public Template getTemplate(int templateId) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		List<Template> allTemplates = getAllTemplates();
+		for(int i = 0;i<allTemplates.size();i++) {
+			if(allTemplates.get(i).getId() == templateId) {
+				return allTemplates.get(i);
+			}
+		}
 		return null;
 	}
 
@@ -306,5 +324,28 @@ public class SqlHelper {
 		}
 		
 		return toReturn;
+	}
+
+	public void insertTemplate(TemplateInsert templateInsert) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		Connection conn = getMySqlConnection();
+	    String simpleProc = "{ call sp_sel_tasksbytemplatename('" + templateInsert.getTemplateName() + "') }";
+	    CallableStatement cs = conn.prepareCall(simpleProc);
+	    cs.execute();
+	    ResultSet rs1 = cs.getResultSet();
+	    while(rs1.next()) {
+	    	String taskName = rs1.getString("TaskName");
+	    	String taskDescription = rs1.getString("TaskDescription");
+	    	
+			String paramString = String.format("'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s'", 
+					taskName, taskDescription, dateToString(Utils.TimestampToDate(templateInsert.getStartDate())), dateToString(Utils.TimestampToDate(templateInsert.getDueDate())),
+					dateToString(Utils.TimestampToDate(templateInsert.getCompletedDate())), getUserId(templateInsert.getAssignedToUser()), getUserId(templateInsert.getAssignedByUser()),
+					templateInsert.getPatient(), dateToString(Utils.TimestampToDate(templateInsert.getCreateDate())), dateToString(Utils.TimestampToDate(templateInsert.getUpdateDate())),
+							templateInsert.getPatientName());
+			paramString = paramString.replace("'NULL'", "NULL");
+		    String simpleProc2 = "{ call sp_ins_task(" + paramString + ") }";
+		    CallableStatement cs2 = conn.prepareCall(simpleProc2);
+		    cs2.execute();	
+	    }
+	    conn.close();
 	}
 }

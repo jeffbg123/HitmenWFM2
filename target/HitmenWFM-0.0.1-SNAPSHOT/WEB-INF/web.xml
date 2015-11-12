@@ -13,5 +13,9 @@
         <servlet-name>hitmenwfm2</servlet-name>
         <url-pattern>/api/*</url-pattern>
     </servlet-mapping>
-  
+  <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>
 </web-app>

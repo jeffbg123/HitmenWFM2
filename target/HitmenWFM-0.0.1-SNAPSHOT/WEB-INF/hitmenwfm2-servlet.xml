@@ -12,4 +12,5 @@
         <property name="prefixJson" value="false"/>
         <property name="supportedMediaTypes" value="application/json"/>
     </bean>
+    
 </beans>

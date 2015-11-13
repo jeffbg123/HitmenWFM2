@@ -1,0 +1,1 @@
+open('http://hitmenwfm.herokuapp.com/api/sendalerts')

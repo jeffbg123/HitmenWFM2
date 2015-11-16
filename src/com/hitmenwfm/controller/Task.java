@@ -1,8 +1,12 @@
 package com.hitmenwfm.controller;
 
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -143,5 +147,59 @@ public class Task implements Serializable {
 	
 	public void setPatientName(String patientName) {
 		this.patientName = patientName;
+	}
+	
+	public void alertAssignedToUserNewTask(SqlHelper sh) throws AddressException, MessagingException, InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		String header = "HitmenWFM";
+		String body = "A new task has been assigned to you! Task name = " + getTaskName();
+		String username = "hitmenwfm";
+		String password = "hitmenwfmhitmenwfm";
+		String emailTo = sh.getUserByUsername(assignedToUser).getEmail();
+		GoogleMail.Send(username, password, emailTo, header, body);
+	}
+	
+	public void alertAssignedToUserUpdatedTask(SqlHelper sh) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, AddressException, MessagingException {
+		String header = "HitmenWFM";
+		String body = "A task assigned to you has been updated! Task name = " + getTaskName();
+		String username = "hitmenwfm";
+		String password = "hitmenwfmhitmenwfm";
+		String emailTo = sh.getUserByUsername(assignedToUser).getEmail();
+		GoogleMail.Send(username, password, emailTo, header, body);
+	}
+	
+	public void alertAssignedToUserDeletedTask(SqlHelper sh) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, AddressException, MessagingException {
+		String header = "HitmenWFM";
+		String body = "A task assigned to you has been deleted! Task name = " + getTaskName();
+		String username = "hitmenwfm";
+		String password = "hitmenwfmhitmenwfm";
+		String emailTo = sh.getUserByUsername(assignedToUser).getEmail();
+		GoogleMail.Send(username, password, emailTo, header, body);
+	}
+	
+	public void alertAssignedByUserCompletedTask(SqlHelper sh) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, AddressException, MessagingException {
+		String header = "HitmenWFM";
+		String body = "A task assigned by you has been completed! Task name = " + getTaskName();
+		String username = "hitmenwfm";
+		String password = "hitmenwfmhitmenwfm";
+		String emailTo = sh.getUserByUsername(assignedToUser).getEmail();
+		GoogleMail.Send(username, password, emailTo, header, body);
+	}
+	
+	public void alertAssignedToUserOverdueTask(SqlHelper sh) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, AddressException, MessagingException {
+		String header = "HitmenWFM";
+		String body = "A task assigned to you is overdue! Task name = " + getTaskName();
+		String username = "hitmenwfm";
+		String password = "hitmenwfmhitmenwfm";
+		String emailTo = sh.getUserByUsername(assignedToUser).getEmail();
+		GoogleMail.Send(username, password, emailTo, header, body);
+	}
+	
+	public void alertAssignedByUserOverdueTask(SqlHelper sh) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, AddressException, MessagingException {
+		String header = "HitmenWFM";
+		String body = "A task assigned by you is overdue! Task name = " + getTaskName();
+		String username = "hitmenwfm";
+		String password = "hitmenwfmhitmenwfm";
+		String emailTo = sh.getUserByUsername(assignedToUser).getEmail();
+		GoogleMail.Send(username, password, emailTo, header, body);
 	}
 }

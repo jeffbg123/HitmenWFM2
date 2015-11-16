@@ -33,10 +33,10 @@ public class HitmenWFMController {
 		HttpSession session = request.getSession(true);
 		SecurityContext securityContext =(SecurityContext) session.getAttribute("SPRING_SECURITY_CONTEXT");
 		if(securityContext == null)
-			return false;
+			return true;
 		Authentication authentication = securityContext.getAuthentication();
 		if (authentication == null) {
-			return false;
+			return true;
 		}
 		return true;
 	}
@@ -65,8 +65,16 @@ public class HitmenWFMController {
 	    }	
 	}
 	
+	/**
+	 * Gets all users
+	 * 
+	 * 
+	 * @param 
+	 * @return List<User>
+	 * @throws Exception
+	 */
 	@RequestMapping(value="/user",method=RequestMethod.GET)
-	public @ResponseBody ResponseEntity<?> createUser() throws Exception {
+	public @ResponseBody ResponseEntity<?> getUsers() throws Exception {
 		try {
 			SqlHelper sh = new SqlHelper();
 			List<User> allUsers = sh.getAllUsers();
@@ -212,6 +220,15 @@ public class HitmenWFMController {
 		return username;
 	}
 	
+	/**
+	 *  Checks whether or not the user is authenticated
+	 *  
+	 * 
+	 * 
+	 * @param 
+	 * @return User
+	 * @throws Exception
+	 */
 	@RequestMapping(value="/user/login",method=RequestMethod.GET)
 	public @ResponseBody ResponseEntity<?> userLoginGet(HttpServletRequest request) throws Exception {
 		try {
@@ -279,8 +296,10 @@ public class HitmenWFMController {
 			
 			SqlHelper sh = new SqlHelper();
 			sh.InsertTask(task);
-			if(task != null)
+			
+			if(task != null) {
 				return new ResponseEntity<>(task, HttpStatus.OK);
+			}
 			return new ResponseEntity<>(ErrorToJson("No Task Found"), HttpStatus.BAD_REQUEST);
 		}catch(Exception ex){
 	        String errorMessage;
@@ -306,8 +325,10 @@ public class HitmenWFMController {
 			}
 			SqlHelper sh = new SqlHelper();
 			sh.updateTask(taskid, task);
-			if(task != null)
+			if(task != null) {
+				task.alertAssignedToUserUpdatedTask(sh);
 				return new ResponseEntity<>(task, HttpStatus.OK);
+			}
 			return new ResponseEntity<>(ErrorToJson("No Task Found"), HttpStatus.BAD_REQUEST);
 		}catch(Exception ex){
 	        String errorMessage;
@@ -384,6 +405,12 @@ public class HitmenWFMController {
 				return new ResponseEntity<>(ErrorToJson("No one is logged in!"), HttpStatus.PROXY_AUTHENTICATION_REQUIRED);
 			}
 			SqlHelper sh = new SqlHelper();
+			List<Task> t = sh.getAllTasks();
+			for(int i = 0;i<t.size();i++) {
+				if(t.get(i).getTaskId() == taskid) {
+					t.get(i).alertAssignedToUserDeletedTask(sh);
+				}
+			}
 			sh.deleteTask(taskid);
 			return new ResponseEntity<>(taskid, HttpStatus.OK);
 		}catch(Exception ex){
@@ -409,6 +436,12 @@ public class HitmenWFMController {
 			}
 			SqlHelper sh = new SqlHelper();
 			sh.markTaskComplete(taskid);
+			List<Task> t = sh.getAllTasks();
+			for(int i = 0;i<t.size();i++) {
+				if(t.get(i).getTaskId() == taskid) {
+					t.get(i).alertAssignedByUserCompletedTask(sh);
+				}
+			}
 			return new ResponseEntity<>(taskid, HttpStatus.OK);
 		}catch(Exception ex){
 	        String errorMessage;
@@ -475,6 +508,14 @@ public class HitmenWFMController {
 	    }	
 	}
 
+	/**
+	 *   Takes a template and adds all tasks for that template to the database
+	 * 
+	 * 
+	 * @param Template
+	 * @return Template
+	 * @throws Exception
+	 */
 	@RequestMapping(value="/templates",method=RequestMethod.POST)
 	public @ResponseBody ResponseEntity<?> insertTemplate(@RequestBody TemplateInsert templateInsert,HttpServletRequest request) throws Exception {
 		try {
@@ -587,6 +628,7 @@ public class HitmenWFMController {
 
 	//END: /PATIENTS
 	//--------------------------------------------------------------------------------
+	
 	@RequestMapping(value="/sendalerts",method=RequestMethod.GET)
 	public void getPatientById() throws Exception {
 		try {

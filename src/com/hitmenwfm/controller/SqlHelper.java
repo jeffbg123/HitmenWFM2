@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.HttpStatus;
@@ -178,7 +180,7 @@ public class SqlHelper {
 	    conn.close();		
 	}
 
-	public void InsertTask(Task task) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+	public void InsertTask(Task task) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, AddressException, MessagingException {
 		Connection conn = getMySqlConnection();
 		String paramString = String.format("'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s'", 
 				task.getTaskName(), task.getTaskDescription(), dateToString(Utils.TimestampToDate(task.getStartDate())), dateToString(Utils.TimestampToDate(task.getDueDate())),
@@ -188,7 +190,8 @@ public class SqlHelper {
 	    String simpleProc = "{ call sp_ins_task(" + paramString + ") }";
 	    CallableStatement cs = conn.prepareCall(simpleProc);
 	    cs.execute();
-	    conn.close();		
+	    conn.close();	
+		task.alertAssignedToUserNewTask(this);
 	}
 
 	public void updateTask(int taskid, Task task) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
@@ -326,7 +329,7 @@ public class SqlHelper {
 		return toReturn;
 	}
 
-	public void insertTemplate(TemplateInsert templateInsert) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+	public void insertTemplate(TemplateInsert templateInsert) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, AddressException, MessagingException {
 		Connection conn = getMySqlConnection();
 	    String simpleProc = "{ call sp_sel_tasksbytemplatename('" + templateInsert.getTemplateName() + "') }";
 	    CallableStatement cs = conn.prepareCall(simpleProc);
@@ -347,5 +350,12 @@ public class SqlHelper {
 		    cs2.execute();	
 	    }
 	    conn.close();
+	    
+	    String header = "HitmenWFM";
+		String body = "A new template of tasks has been assigned to you! Tempalte name = " + templateInsert.getTemplateName();
+		String username = "hitmenwfm";
+		String password = "hitmenwfmhitmenwfm";
+		String emailTo = getUserByUsername(templateInsert.getAssignedToUser()).getEmail();
+		GoogleMail.Send(username, password, emailTo, header, body);
 	}
 }

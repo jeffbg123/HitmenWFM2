@@ -157,10 +157,13 @@ public class HitmenWFMController {
 	public @ResponseBody ResponseEntity<?> userSetPassword(@RequestBody PasswordInfo passwordInfo) throws Exception {
 		try {
 			SqlHelper sh = new SqlHelper();
-			sh.updatePassword(passwordInfo.getUserName(), passwordInfo.getPassword());
+			Boolean success = sh.updatePassword(passwordInfo.getUserName(), passwordInfo.getPassword(), passwordInfo.getVerificationToken());
 			User user = sh.getUserByUsername(passwordInfo.getUserName());
-			if(user != null)
+			if(user != null && success)
 				return new ResponseEntity<>(user, HttpStatus.OK);
+			else if(!success) {
+				return new ResponseEntity<>(ErrorToJson("Wrong verification token"), HttpStatus.BAD_REQUEST);				
+			}
 			return new ResponseEntity<>(ErrorToJson("No User Found"), HttpStatus.BAD_REQUEST);
 		}catch(Exception ex){
 	        String errorMessage;
@@ -183,7 +186,7 @@ public class HitmenWFMController {
 		try {
 			SqlHelper sh = new SqlHelper();
 			User user = sh.getUserByUsername(loginInfo.getUserName());
-			if(!loginInfo.getPassword().equals(user.getPassword()))
+			if(!Utils.GetMD5(loginInfo.getUserName(),  loginInfo.getPassword()).equals(user.getPassword()))
 				return new ResponseEntity<>(ErrorToJson("Login Failed: Wrong username or password"), HttpStatus.BAD_REQUEST);
 			login(request, user.getuserName(), user.getPassword());
 		    System.out.println("Successfully authenticated");
@@ -598,7 +601,6 @@ public class HitmenWFMController {
 	    }	
 	}
 	
-	
 	//GET /patients/<patient-id>  - for one patient's data
 	/**
 	 *   This will return the name of the patient with the given ID
@@ -619,6 +621,59 @@ public class HitmenWFMController {
 			if(patientName != null)
 				return new ResponseEntity<>(patientName, HttpStatus.OK);
 			return new ResponseEntity<>(ErrorToJson("Problem getting patient!"), HttpStatus.BAD_REQUEST);
+		}catch(Exception ex){
+	        String errorMessage;
+	        errorMessage = ex + " <== error";
+	        return new ResponseEntity<>(ErrorToJson(errorMessage), HttpStatus.BAD_REQUEST);
+	    }	
+	}
+	
+	//GET /fullpatients/id/<patient-id>  - for one patient's data
+	/**
+	 *   This will return all of the patient info for the patient with the given ID
+	 * 
+	 * 
+	 * @param int id
+	 * @return String
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/fullpatients/id/{id}",method=RequestMethod.GET)
+	public @ResponseBody ResponseEntity<?> getFullPatientById(@PathVariable int id,HttpServletRequest request) throws Exception {
+		try {
+			if(!IsAnyoneLoggedIn(request)) {
+				return new ResponseEntity<>(ErrorToJson("No one is logged in!"), HttpStatus.PROXY_AUTHENTICATION_REQUIRED);
+			}
+			FHIRHelper fh = new FHIRHelper();
+			String patientName = fh.getFullPatientById(id);
+			if(patientName != null)
+				return new ResponseEntity<>(patientName, HttpStatus.OK);
+			return new ResponseEntity<>(ErrorToJson("Problem getting patient!"), HttpStatus.BAD_REQUEST);
+		}catch(Exception ex){
+	        String errorMessage;
+	        errorMessage = ex + " <== error";
+	        return new ResponseEntity<>(ErrorToJson(errorMessage), HttpStatus.BAD_REQUEST);
+	    }	
+	}
+	
+	/**
+	 *   This will return a list of all of the patients with a name containing the parameter and all of their information
+	 * 
+	 * 
+	 * @param name String
+	 * @return List<String>
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/fullpatients/name/{name}",method=RequestMethod.GET)
+	public @ResponseBody ResponseEntity<?> getFullPatientsByName(@PathVariable String name,HttpServletRequest request) throws Exception {
+		try {
+			if(!IsAnyoneLoggedIn(request)) {
+				return new ResponseEntity<>(ErrorToJson("No one is logged in!"), HttpStatus.PROXY_AUTHENTICATION_REQUIRED);
+			}
+			FHIRHelper fh = new FHIRHelper();
+			String patientNames = fh.getFullPatientNames(name);
+			if(patientNames != null)
+				return new ResponseEntity<>(patientNames, HttpStatus.OK);
+			return new ResponseEntity<>(ErrorToJson("Problem getting patients!"), HttpStatus.BAD_REQUEST);
 		}catch(Exception ex){
 	        String errorMessage;
 	        errorMessage = ex + " <== error";

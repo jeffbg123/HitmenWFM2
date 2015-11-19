@@ -1,5 +1,7 @@
 package com.hitmenwfm.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -35,7 +37,7 @@ public class SqlHelper {
 		String paramString = String.format("'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s'", 
 				user.getuserName(), 
 				user.getEmail(), 
-				user.getPassword(),
+				Utils.GetMD5(user.getuserName(),user.getPassword()),
 				user.getFirstName(),
 				user.getLastName(),
 				user.getMiddleName(),
@@ -88,9 +90,13 @@ public class SqlHelper {
 	    return toReturn;
 	}
 
-	public void updatePassword(String userName, String newPassword) throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+	public Boolean updatePassword(String userName, String newPassword, String verificationToken) throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException, UnsupportedEncodingException, NoSuchAlgorithmException {
+		newPassword = Utils.GetMD5(userName, newPassword);
 		Connection conn = getMySqlConnection();
 		User user = getUserByUsername(userName);
+		if(!verificationToken.equals(Utils.GetMD5(user.getFirstName(), user.getLastName()))) {
+			return false;
+		}
 		String paramString = String.format("'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s'", 
 				user.getuserName(), 
 				user.getEmail(), 
@@ -111,6 +117,7 @@ public class SqlHelper {
 	    CallableStatement cs = conn.prepareCall(simpleProc);
 	    cs.execute();
 	    conn.close();
+	    return true;
 	}
 	
 	public int getUserId(String username) throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException {
@@ -156,12 +163,12 @@ public class SqlHelper {
 		return sdf.format(d);
 	}
 
-	public void updateUser(User user) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+	public void updateUser(User user) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, UnsupportedEncodingException, NoSuchAlgorithmException {
 		Connection conn = getMySqlConnection();
 		String paramString = String.format("'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s'", 
 				user.getuserName(), 
 				user.getEmail(), 
-				user.getPassword(),
+				Utils.GetMD5(user.getuserName(),  user.getPassword()),
 				user.getFirstName(),
 				user.getLastName(),
 				user.getMiddleName(),

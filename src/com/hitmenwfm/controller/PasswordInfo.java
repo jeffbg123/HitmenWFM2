@@ -3,6 +3,7 @@ package com.hitmenwfm.controller;
 public class PasswordInfo {
 	private String userName;
 	private String password;
+	private String verificationToken;
 	
 	public void setUserName(String userName)
 	{
@@ -19,5 +20,13 @@ public class PasswordInfo {
 	
 	public String getPassword() {
 		return password;
+	}
+	
+	public void setVerificationToken(String verificationToken) {
+		this.verificationToken = verificationToken;
+	}
+	
+	public String getVerificationToken() {
+		return verificationToken;
 	}
 }

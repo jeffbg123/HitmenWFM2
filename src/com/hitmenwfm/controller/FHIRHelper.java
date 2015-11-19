@@ -46,5 +46,15 @@ public class FHIRHelper {
 		JSONObject obj = entryArray.getJSONObject(0);
 		return getNameForEntry(obj);
 	}
+	
+	public String getFullPatientById(int id) throws IOException, JSONException {
+		JSONObject j = JsonReader.readJsonFromUrl("http://polaris.i3l.gatech.edu:8080/gt-fhir-webapp-ro/base/Patient?_id=" + id);
+		return j.toString();
+	}
+	
+	public String getFullPatientNames(String name) throws IOException, JSONException {
+		JSONObject j = JsonReader.readJsonFromUrl("http://polaris.i3l.gatech.edu:8080/gt-fhir-webapp-ro/base/Patient?name=" + name);
+		return j.toString();
+	}
 
 }

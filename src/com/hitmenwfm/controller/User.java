@@ -1,6 +1,8 @@
 package com.hitmenwfm.controller;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,6 +17,7 @@ import javax.mail.internet.AddressException;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.DateSerializer;
@@ -97,7 +100,6 @@ public class User implements Serializable   {
 			setUserTypeId(rs1.getInt("userTypeID"));
 			setUpdateTime(Utils.DateToTimeStamp(rs1.getDate("UpdateTime")));
 			setUserDetailsID(rs1.getInt("userDetailsID"));
-			
 		}
 	}
 	
@@ -133,6 +135,7 @@ public class User implements Serializable   {
 		this.birthDate = birthDate;
 	}
 	
+	@JsonIgnore
 	public String getBirthDateMysqlString() {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		return sdf.format(Utils.TimestampToDate(getBirthDate()));
@@ -250,9 +253,9 @@ public class User implements Serializable   {
 		return cellPhone;
 	}
 
-	public void emailForgotPassword() throws AddressException, MessagingException {
-		String header = "HitmenWFM Forgot Password Reset Link";
-		String body = "Placeholder for reset link";
+	public void emailForgotPassword() throws AddressException, MessagingException, UnsupportedEncodingException, NoSuchAlgorithmException {
+		String header = "HitmenWFM Forgot Password";
+		String body = "Here is your reset verification token: " + Utils.GetMD5(getFirstName(), getLastName());
 		String username = "hitmenwfm";
 		String password = "hitmenwfmhitmenwfm";
 		GoogleMail.Send(username, password, email, header, body);

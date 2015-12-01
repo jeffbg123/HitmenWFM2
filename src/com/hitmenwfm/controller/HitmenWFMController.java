@@ -33,10 +33,10 @@ public class HitmenWFMController {
 		HttpSession session = request.getSession(true);
 		SecurityContext securityContext =(SecurityContext) session.getAttribute("SPRING_SECURITY_CONTEXT");
 		if(securityContext == null)
-			return true;
+			return false;
 		Authentication authentication = securityContext.getAuthentication();
 		if (authentication == null) {
-			return true;
+			return false;
 		}
 		return true;
 	}
